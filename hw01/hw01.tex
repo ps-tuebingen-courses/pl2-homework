@@ -1,0 +1,40 @@
+Consider the following example grammar using $+,-,*$ where the terminal $n$ stands for an integer.
+\[
+  \begin{array}{l c r}
+  e & \coloneq & n \mid t + t \mid t - t \mid t * t \mid  \mathtt{ifz}(t;t,t) 
+  \end{array}
+\]
+
+\section*{Task 01}
+Transform this grammar into the different styles introduced in the lecture:
+\begin{itemize}
+\item Inference Rules
+\item Inductive Definition (``smallest set $T$ closed under $\dots$'')
+\item Limit of a sequence of sets $S_n$ and show that for all $i$ we have $S_i\subseteq S_{i+1}$
+\end{itemize}
+
+\section*{Task 02}
+Consider the following inductive definitions of $\mathtt{depth}$ and $\mathtt{size}$
+\[
+\begin{array}{l c r}
+\mathtt{depth}(n) & \coloneq&  1\\
+\mathtt{depth}(t_1+t_2) &\coloneq&\max\{\mathtt{depth}(t_1),\mathtt{depth}(t_2)\} + 1\\
+\mathtt{depth}(t_1-t_2) &\coloneq& \max\{\mathtt{depth}(t_1),\mathtt{depth}(t_2)\} + 1\\
+\mathtt{depth}(t_1*t_2) &\coloneq& \max\{\mathtt{depth}(t_1),\mathtt{depth}(t_2)\} + 1\\
+\mathtt{depth}(\mathtt{ifz(t_1;t_2,t_3)}) &\coloneq& \max\{\mathtt{depth}(t_1),\mathtt{depth}(t_2),\mathtt{depth}(t_3)\} + 1
+\end{array}
+\]
+\[
+\begin{array}{l c r}
+\mathtt{size}(n) & \coloneq&  1\\
+\mathtt{size}(t_1+t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(t_1-t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(t_1*t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(\mathtt{ifz(t_1;t_2,t_3)}) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2)+\mathtt{size}(t_3) + 1
+\end{array}
+\]
+Using induction on the structure of terms, show that for any term $t$ we have $\mathtt{depth}(t) \leq \mathtt{size}(t)$.
+
+\section*{Task 03}
+Read through chapter 3 of "Types and Programming Languages" and write down a question about the chapter. 
+These will be discussed in the next tutorial session.
