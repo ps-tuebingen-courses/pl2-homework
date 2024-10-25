@@ -3,7 +3,7 @@ Consider the grammar from homework 01, with $+,-,*$ shortened to $\oplus$:
 \[
   \begin{array}{l c r r}
     \oplus & \coloneq & + \mid - \mid * & \emph{Binary Operations}\\
-    t & \coloneq & n \mid t \oplus t  \mathtt{ifz}(t;t,t) & \emph{Terms}\\
+    t & \coloneq & n \mid t \oplus t  \mid \mathtt{ifz}(t;t,t) & \emph{Terms}\\
   \end{array}
 \]
 We define the following operational semantics for this language
@@ -84,7 +84,6 @@ If you are using LaTeX for your solution, use the package ``bussproofs'' for the
   \item Give an example term that is in normal form and not a value (i.e. stuck)
   \item Explain why that example is stuck and cannot be evaluated any further 
 \end{itemize}
-Give an exmaple of a term in this language that 
 
 \subsection*{Induction on Derivation Trees}
 Take the definition of $\mathtt{size}$ from the last homework:
