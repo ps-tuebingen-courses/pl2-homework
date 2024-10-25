@@ -1,0 +1,106 @@
+\section*{Evaluation Contexts}
+Consider the grammar from homework 01, with $+,-,*$ shortened to $\oplus$:
+\[
+  \begin{array}{l c r r}
+    \oplus & \coloneq & + \mid - \mid * & \emph{Binary Operations}\\
+    t & \coloneq & n \mid t \oplus t  \mathtt{ifz}(t;t,t) & \emph{Terms}\\
+  \end{array}
+\]
+We define the following operational semantics for this language
+
+\begin{align*}
+  v & \coloneq n & \emph{Values}\\
+  v_1 \oplus v_2 & \rightarrow & (v_1\oplus v_2)\\
+  \mathtt{ifz}(0;t_1,t_2) & \rightarrow &  t_1\\
+  \mathtt{ifz}(v;t_2,t_2) & \rightarrow & t_2 \text{if } n\neq 0\\
+\end{align*}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\rightarrow t_1^{\prime}$}
+      \UnaryInfC{$t_1\oplus t_2 \rightarrow t_1^{\prime}\oplus t_2$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_2\rightarrow t_2^{\prime}$}
+      \UnaryInfC{$v \oplus t_2 \rightarrow v \oplus t_2^{\prime}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\rightarrow t_1^{\prime}$}
+      \UnaryInfC{$\mathtt{ifz}(t_1;t_2,t_3) \rightarrow \mathtt{ifz}(t_1^{\prime};t_2,t_3)$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{2em}
+\end{minipage}
+
+Here $(v_1 + v_2)$ means we take the integer given by the sum of values $v_1$ and $v_2$ (instead of the term $v_1+v_2$, and similarly for $-$ and $*$.
+\begin{itemize}
+  \item Which of the above rules are congruence rules? Which are computation rules?
+  \item Re-formulate the congruence rules using \emph{evaluation contexts}.
+    That is, write an abstract grammar for $E$ such that all congruence rules above can be replaced with the single rule:
+\end{itemize}
+
+\begin{minipage}{\textwidth}
+  \begin{prooftree}
+    \AxiomC{$t\rightarrow t^{\prime}$}
+    \UnaryInfC{$E[t] \rightarrow E[t^{\prime}]$}
+  \end{prooftree}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+
+Here, $E[t]$ denotes the result of ``plugging in'' $t$ in $E$, i.e., replacing $\square$ with $t$ in $E$.
+
+\section*{Evaluation}
+
+\subsection*{Derivation Trees}
+
+Using the above language and the given evaluation rules, give a derivation tree for evaluating the following term by one step
+\begin{align*}
+  \mathtt{ifz}((3*4)-5;(7*7)+15,4+4)
+\end{align*}
+The tree should begin like this \\
+\begin{minipage}{\textwidth}
+  \begin{prooftree}
+    \AxiomC{\dots}
+    \UnaryInfC{$\mathtt{ifz}((3*4)-5;(7*7)+15,4+4) \mapsto \mathtt{ifz}(12-5;(7*7)+15,4+4)$}
+  \end{prooftree}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+If you are using LaTeX for your solution, use the package ``bussproofs'' for the derivation tree.
+
+\subsection*{Normal Forms}
+
+\begin{itemize}
+  \item Give an example term that is in normal form and a value
+  \item Give an example term that is in normal form and not a value (i.e. stuck)
+  \item Explain why that example is stuck and cannot be evaluated any further 
+\end{itemize}
+Give an exmaple of a term in this language that 
+
+\subsection*{Induction on Derivation Trees}
+Take the definition of $\mathtt{size}$ from the last homework:
+\[
+\begin{array}{l c r}
+\mathtt{size}(n) & \coloneq&  1\\
+\mathtt{size}(t_1+t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(t_1-t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(t_1*t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(\mathtt{ifz(t_1;t_2,t_3)}) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2)+\mathtt{size}(t_3) + 1
+\end{array}
+\]
+
+Using induction on derivation trees, show that for any two terms $t,t^{\prime}$ with $t\mapsto t^{\prime}$ we have $\mathtt{size}(t) \geq \mathtt{size}(t^{\prime})$.
+
+\section*{Types and Programming Languages}
+Read through chapter 4 of types and programming languages and think of a question about this or the previous chapter.
+Post your question in the forum thread for the current homework.
+Since not all questions from last week were discussed in the tutorial session, you can also repost these questions if they are still open.
