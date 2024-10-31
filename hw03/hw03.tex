@@ -1,0 +1,102 @@
+\section*{Task 1: Evaluation of Untyped Lambda Calculus}
+
+Reduce the following terms in the lambda calculus until they reach a normal form.
+Use the call-by-name evaluation strategy.
+
+\begin{enumerate}
+  \item $(\lambda\ x.\lambda\ y.y)\ (\lambda\ a.a\ a)$ 
+    % (\x.\y.y) (\a.a a) --> \y.y
+  \item $((\lambda\ x. \lambda\ y.x\ y)\ (\lambda\ z.\lambda\ w.w))\ (\lambda\ a.a\ a) $
+    % (\x.\y.x y) (\z.\w.w) (\a.a a) --> (\y.(\z.\w.w) y) (\a.a a) --> (\z.\w.w) (\a.a a) --> \w.w
+\end{enumerate}
+
+You do not have to draw a derivation tree for the reduction relation, but you have to write down all
+reduction steps. So, e.g., for $\lambda\ f.f;(\lambda\ x.x);(\lambda\ x.x)$
+you would write down the following:
+\begin{align*}
+  & (\lambda\ f.f\ (\lambda\ x.x))\ (\lambda\ x.x) \\
+  \mapsto &  (\lambda\ x.x)\ (\lambda\ x.x)\\
+  \mapsto & (\lambda\ x.x)
+\end{align*}
+
+\section*{Task 2: Church encoding}
+In the book, natural numbers were encoded in the lambda calculus as follows:
+\begin{align*}
+  c_0 & = & \lambda\ s. \lambda\ z.z\\
+  c_1 & = & \lambda\ s. \lambda\ z.s\ z\\
+  \vdots\\
+  c_n & = & \lambda\ s. \lambda z. s\ s\ \dots\ z; & \text{ (with $s$ appearing $n$ times)}
+\end{align*}
+
+Similarly, we are now going to encode binary trees in lambda calculus as folds.
+That is, the tree
+\begin{center}
+  \tikz{
+    \node[draw,circle]{$v$} child {
+      node[draw,circle]{$v_1$} child { node[draw]{$v_{11}$} } child { node[draw]{$v_{12}$} }
+    } child {node[draw]{$v_2$}};
+  }
+\end{center}
+is encoded as
+\begin{align*}
+  \lambda\ f.\lambda\ g.f\ v\ (f\ v_1\ (g\ v_{11})\ (g\ v_{12}))\ (g\ v_2)
+\end{align*}
+
+The basic tree functions look like this:
+\begin{align*}
+  \mathtt{leaf} & \coloneq & \lambda\ v.\lambda\ f.\lambda\ g.g\ v \\
+  \mathtt{node} & \coloneq & \lambda\ v.\lambda\ l.\lambda\ r.\lambda\ f.\lambda\ g.f\ v\ (l\ f\ g)\ (r\ f\ g) \\
+  \mathrm{fold} & \coloneq & \lambda\ f.\lambda\ g.\lambda\ t.t\ f\ g
+\end{align*}
+
+Write the following functions, operating on trees:
+\begin{enumerate}
+  \item $\mathtt{sum_leaves}$: sums the values in the \emph{leaves}.
+  \item $\mathtt{map}$: given a function $f$, returns a tree with the same structure but $f$ applied to the value in every inner node and leaf.
+  \item $\mathtt{size}$: returns the number of nodes
+\end{enumerate}
+
+You may use the functions defined in the book, such as $\mathtt{plus}$, $c_0,c_1,\dots$
+
+\section*{Task 3: Call-by-name lambda calculus}
+
+In the lecture, you have seen the rules for the call-by-value (CBV) lambda calculus.
+
+For call-by-name (CBN), we want to apply a function \emph{before} evaluating the arguments, e.g.,
+\begin{align*}
+  & (\lambda\ x.x)\ ((\lambda\ y.y)\ (\lambda\ z.z\ z)) \\
+  \mapsto & (\lambda\ y.y)\ (\lambda\ z.z\ z)\\
+  \mapsto & (\lambda\ z.z\ z)
+\end{align*}
+
+\begin{itemize}
+  \item Give inference rules defining the (one-step) evaluation relation for the call-by-name lambda calculus
+  \item Evaluate the following term using both call-by-value and call-by-name. As in task 1, you do not need to draw the derivation tree for each step
+  \item What are the possible up- and downsides of using cbv and cbn?
+\end{itemize}
+
+\begin{align*}
+    (\lambda\ f.\lambda\ v.v\ v)\ ((\lambda\ x.x)\ (\lambda\ y.\lambda\ z.y))\ ((\lambda\ a.a\ a)\ (\lambda\ y.y))
+\end{align*}
+%% λ mapM_ print $ steps cbn ex1 -- 7 steps
+%% (((\f. (\v. (v v))) ((\x. x) (\y. (\z. y)))) ((\a. (a a)) (\y. y)))
+%% ((\v. (v v)) ((\a. (a a)) (\y. y)))
+%% (((\a. (a a)) (\y. y)) ((\a. (a a)) (\y. y)))
+%% (((\y. y) (\y. y)) ((\a. (a a)) (\y. y)))
+%% ((\y. y) ((\a. (a a)) (\y. y)))
+%% ((\a. (a a)) (\y. y))
+%% ((\y. y) (\y. y))
+%% (\y. y)
+%% λ mapM_ print $ steps cbv ex1 -- 6 steps
+%% (((\f. (\v. (v v))) ((\x. x) (\y. (\z. y)))) ((\a. (a a)) (\y. y)))
+%% (((\f. (\v. (v v))) (\y. (\z. y))) ((\a. (a a)) (\y. y)))
+%% ((\v. (v v)) ((\a. (a a)) (\y. y)))
+%% ((\v. (v v)) ((\y. y) (\y. y)))
+%% ((\v. (v v)) (\y. y))
+%% ((\y. y) (\y. y))
+%% (\y. y)
+%
+
+\section*{Task 4}
+Read chapter 5 of Types and Programming languages and post your questions in the dedicated forum thread.
+Optionally also watch the talk \href{https://www.youtube.com/watch?v=dCuZkaaou0Q}{``It's Time for a New Old Language''} by Guy Steele and post your questions in the forum.
