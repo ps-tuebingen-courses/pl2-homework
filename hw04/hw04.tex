@@ -1,0 +1,277 @@
+\section{Typing}
+Consider the following programming language of integers and floating point numbers 
+\[
+  \begin{array}{lcrr}
+    & & n\in\mathbb{Z} \quad f\in\mathbb{R}\\
+    \oplus & \coloneq & + \mid - \mid * \mid / &\emph{Binary Operations}\\
+    t & \coloneq & & \emph{Terms} \\
+    & & \mathtt{Int}(n) & \emph{Integers}\\ 
+    & \mid & \mathtt{Fl}(f) & \emph{Floating Point Numbers} \\
+    & \mid & t \oplus t & \emph{Operations}\\
+    & \mid & \mathtt{Round}(t) & \emph{Round up/down}\\
+    & \mid & \mathtt{AsFloat}(t) & \emph{Convert int to float}\\
+    & \mid & \mathtt{pow}(t,t) & \emph{Exponentials}
+  \end{array}
+\]
+In this language there are floating point numbers and integers, tagged with $\mathtt{Fl}$ and $\mathtt{Int}$, respectively.
+These tags are added to avoid ambiguity for terms such as $3$ which could be interpreted as either the floating point number $3.0$ or the integer $3$. 
+Instead, we use $\mathtt{Int}(3)$ and $\mathtt{Fl}(3)$ to make it clear which one we are referring to.\\
+We can take sums, differences, products, and quotients of these numbers, as well as round a value and convert integers to floating point numbers.
+Lastly, we can take the exponential of two numbers, e.g. $\mathtt{pow}(\mathtt{Fl}(3),\mathtt{Int}(2))$ refers to the term $3^2$.\\
+To this language we add the following type system:
+\[
+  \begin{array}{lcrr}
+    \tau & \coloneq \mathtt{Int} \mid \mathtt{Fl} & \emph{Types}
+  \end{array}
+\]
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{Ty-Int}}
+      \UnaryInfC{$\mathtt{Int}(n) : \mathtt{Int}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1:\tau$}
+      \AxiomC{$t_2:\tau$}
+      \RightLabel{\textsc{Ty-BinOp}}
+      \BinaryInfC{$t_1\oplus t_2 : \tau$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{Ty-Float}}
+      \UnaryInfC{$\mathtt{Fl}(n) : \mathtt{Fl}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\mathtt{Fl}$}
+      \RightLabel{\textsc{Ty-Round}}
+      \UnaryInfC{$\mathtt{Round}(t):\mathtt{Int}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\mathtt{Int}$}
+      \RightLabel{\textsc{Ty-ToFloat}}
+      \UnaryInfC{$\mathtt{AsFloat}(t):\mathtt{Fl}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1:\tau$}
+      \AxiomC{$t_2:\mathtt{Int}$}
+      \RightLabel{\textsc{Ty-Pow}}
+      \BinaryInfC{$\mathtt{pow}(t_1,t_2):\mathtt{Fl}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+Now consider the following terms in this language
+\begin{enumerate}
+  \item $(\mathtt{Fl}(1) + \mathtt{pow}(\mathtt{Fl}(5),\mathtt{Fl}(0.5)))/\mathtt{Fl}(2)$
+  \item $\mathtt{round}(\mathtt{Fl}(3) * \mathtt{AsFloat}(\mathtt{Int}(4)))$
+  \item $\mathtt{pow}(\mathtt{AsFloat}(\mathtt{Int}(2)),\mathtt{Int}(64))$
+  \item $\mathtt{Fl}(4) / \mathtt{Int}(2)$
+\end{enumerate}
+For each of these terms, state if they can be typed using the rules above.
+If they can be, give a typing derivation, otherwise give a reason why the term is not well-typed.
+Here is an example tree for the term $((\mathtt{AsFloat}(\mathtt{Int}(4))*\mathtt{Fl}(3.14))*\mathtt{pow}(\mathtt{Int}(2),\mathtt{Int}(3)))/\mathtt{Fl}(3)$\\
+\begin{minipage}{\textwidth}
+  \vspace{1em}
+  \begin{prooftree}
+    \AxiomC{}
+    \UnaryInfC{$\mathtt{Int}(4):\mathtt{Int}$}
+    \UnaryInfC{$\mathtt{AsFloat}(\mathtt{Int}(4)):\mathtt{Fl}$}
+    \AxiomC{}
+    \UnaryInfC{$\mathtt{Fl}(3.14):\mathtt{Fl}$}
+    \BinaryInfC{$\mathtt{AsFloat}(\mathtt{Int}(4))*\mathtt{Fl}(3.14):\mathtt{Fl}$}
+
+    \AxiomC{}
+    \UnaryInfC{$\mathtt{Int}(2):\mathtt{Int}$}
+    \AxiomC{}
+    \UnaryInfC{$\mathtt{Int}(3):\mathtt{Int}$}
+    \BinaryInfC{$\mathtt{pow}(\mathtt{Int}(2),\mathtt{Int}(3)) : \mathtt{Fl}$}
+    \BinaryInfC{$(\mathtt{AsFloat}(\mathtt{Int}(4))*\mathtt{Fl}(3.14))*\mathtt{pow}(\mathtt{Int}(2),\mathtt{Int}(3)) : \mathtt{Fl}$}
+
+    \AxiomC{}
+    \UnaryInfC{$\mathtt{Fl}(3):\mathtt{Fl}$}
+    \BinaryInfC{$((\mathtt{AsFloat}(\mathtt{Int}(4))*\mathtt{Fl}(3.14))*\mathtt{pow}(\mathtt{Int}(2),\mathtt{Int}(3)))/\mathtt{Fl}(3)$}
+  \end{prooftree}
+\end{minipage}
+
+\section{Progress and Preservation}
+Given the language above, we extend it with the following operational semantics:
+\[
+  \begin{array}{lcrr}
+    v & \coloneq & \mathtt{Fl}(f) \mid \mathtt{Int}(n) & \emph{Values}\\
+  \end{array}
+\]
+\begin{align*}
+  \mathtt{Fl}(f_1) \oplus \mathtt{Fl}(f_2) &\mapsto \mathtt{Fl}(f_1\oplus f_2) & \text{\textsc{E-FlOp}}\\
+  \mathtt{Int}(i_1) \oplus \mathtt{Int}(i_2) &\mapsto \mathtt{Int}(i_1\oplus i_2) & \text{\textsc{E-IntOp}}\\
+  \mathtt{round}(\mathtt{Fl}(f)) &\mapsto \mathtt{Int}(\lfloor f \rceil) & \text{\textsc{E-RoundFl}}\\
+  \mathtt{AsFloat}(\mathtt{Int}(i)) &\mapsto \mathtt{Fl}(i) & \text{\textsc{E-IntFl}}\\
+  \mathtt{pow}(\mathtt{Fl}(f),\mathtt{Int}(i)) &\mapsto \mathtt{Fl}(f^i) & \text{\textsc{E-PowFl}}\\
+  \mathtt{pow}(\mathtt{Int}(i_1),\mathtt{Int}(i_2)) &\mapsto \mathtt{Fl}(i_1^{i_2}) & \text{\textsc{E-PowInt}}\\
+\end{align*}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\mapsto t_1^{\prime}$}
+      \RightLabel{\textsc{E-BinOp1}}
+      \UnaryInfC{$t_1\oplus t_2 \mapsto t_1^{\prime}\oplus t_2$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_2\mapsto t_2^{\prime}$}
+      \RightLabel{\textsc{E-BinOp2}}
+      \UnaryInfC{$v\oplus t_2 \mapsto v\oplus t_2^{\prime}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-Round}}
+      \UnaryInfC{$\mathtt{round}(t) \mapsto \mathtt{round}(t^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-AsFloat}}
+      \UnaryInfC{$\mathtt{AsFloat}(t) \mapsto \mathtt{AsFloat}(t^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\mapsto t_1^{\prime}$}
+      \RightLabel{E-Pow1}
+      \UnaryInfC{$\mathtt{pow}(t_1,t_2)\mapsto \mathtt{pow}(t_1^{\prime},t_2)$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_2\mapsto t_2^{\prime}$}
+      \RightLabel{E-Pow2}
+      \UnaryInfC{$\mathtt{pow}(v,t_2)\mapsto \mathtt{pow}(v,t_2^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+In the rule \textsc{E-RoundFl}, we use the notation $\lfloor f\rceil$ to denote rounding the number $f$ as usual, i.e. $\lfloor 0.5 \rceil = 1$ and $\lfloor 0.4 \rceil = 0$.\\
+Using these semantics, prove \emph{either} \emph{Preservation} or \emph{Progress}. 
+Optionally, you can also prove both theorems.
+\begin{theorem}\emph{Preservation}\\
+  Let $t_1,t_2$ be terms in the language such that $t_1:\tau$ and $t_1\mapsto t_2$. 
+  Then $t_2:\tau$
+\end{theorem}
+
+\begin{theorem}\emph{Progress}\\
+  Let $t_1$ be a wel-typed term, i.e. $t_1:\tau$ for some type $\tau$. 
+  Then either $t_1$ is a value, or there is some $t_2$ such that $t_1\mapsto t_2$.
+\end{theorem}
+
+\section{Designing a type system}
+Take the following syntax for terms and values, where $n$ are integers with operational semantics below
+\[
+  \begin{array}{lcrr}
+    t & \coloneq & &\emph{Terms}\\
+      &          & n \\
+      &\mid      & \mathtt{Nil} \\
+      &\mid      & \mathtt{Cons}(t,t) \\
+      &\mid      & \mathtt{tail}(t)\\
+      &\mid      & \mathtt{succ}(t)\\
+      &          & \mathtt{pred}(t)\\
+      \\
+    lv & \coloneq & \mathtt{Nil}\mid \mathtt{Cons}(n,lv) & \emph{List values}\\
+    v & \coloneq & n\mid lv& \emph{Values}\\
+  \end{array}
+\]
+\begin{align*}
+  \mathtt{tail}(\mathtt{Cons}(n,lv)) & \mapsto lv\\
+  \mathtt{tail}(\mathtt{Nil}) & \mapsto \mathtt{Nil}\\
+  \mathtt{succ}(n) & \mapsto n+1\\
+  \mathtt{pred}(n) & \mapsto n-1\\ 
+\end{align*}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\mapsto t_1^{\prime}$}
+      \RightLabel{\textsc{E-Cons1}}
+      \UnaryInfC{$\mathtt{Cons}(t_1,t_2)\mapsto \mathtt{Cons}(t_1^{\prime},t_2)$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_2\mapsto t_2^{\prime}$}
+      \RightLabel{\textsc{E-Cons2}}
+      \UnaryInfC{$\mathtt{Cons}(n,t_2)\mapsto \mathtt{Cons}(n,t_2^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-Tail}}
+      \UnaryInfC{$\mathtt{tail}(t) \mapsto \mathtt{tail}(t^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-Succ}}
+      \UnaryInfC{$\mathtt{succ}(t) \mapsto \mathtt{succ}(t^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-Pred}}
+      \UnaryInfC{$\mathtt{pred}(t) \mapsto \mathtt{pred}(t^{\prime})$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+Design a type system for this language using the following steps
+\begin{enumerate}
+  \item Give a possible syntax of types
+  \item Give typing rules for this language (stuck terms should not be well typed)\\
+    \emph{(Hint: $\mathtt{Cons}(1,\mathtt{Nil})$ is a value, but $\mathtt{Cons}(\mathtt{Nil},\mathtt{Nil})$ is not.)}
+  \item Show \emph{Progress} and \emph{Preservation} for the type system you designed
+\end{enumerate}
+
+\section{Types and Programming Languages}
+Read through chapter 7 of ``Types and Programming Languages'' and optionally also chapter 6 and post your questions in the dedicated forum thrad.
+
+\section{Optional: Nameless Representations}
+Transform the following terms into the nameless representation introduced in chapter 6 of types and programming languages 
+\begin{enumerate}
+  \item $\lambda\ x. \lambda y. x\ y$
+  \item $\lambda\ x. x\ (\lambda\ y. \lambda\ z. y)$
+  \item $\lambda\ x. ((\lambda y. x) (\lambda z. z))$
+\end{enumerate}
