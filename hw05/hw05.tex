@@ -1,0 +1,314 @@
+\section{Simply Typed Lambda Calculus}
+We consider the simply typed lambda calculus from the lecture, extended with base types $\mathtt{A}$, $\mathtt{B}$, and $\mathtt{C}$.
+Show that that the following terms are well typed in the given contexts by drawing a derivation tree for the typing relation:
+
+\begin{itemize}
+  \item $y:\mathtt{A} \vdash ((\lambda{x:\mathtt{A}}.x)\ y) : \mathtt{A}$
+  \item $x:\mathtt{B}, y:\mathtt{C} \vdash ((\lambda{z:\mathtt{B}}.\lambda{w:\mathtt{A}}.y)\ x) : \mathtt{A} \to \mathtt{C}$
+\end{itemize}
+For which of the following terms $t$ does a context $\Gamma$ and a type $T$ exist,
+such that they are well typed (i.e., $\Gamma\vdash t : T$)?
+If they exist, please write down \(\Gamma\) and \(T\). If not, a short note is enough.
+\begin{itemize}
+  \item $\lambda{x:\mathtt{B}}.\lambda{y:\mathtt{C}}.(\lambda{z:\mathtt{A}.z})~(w~x~y)$
+  \item $\lambda{y:\mathtt{A}}.x~x$
+\end{itemize}
+
+\section{Extension with Numbers}
+In this task, we extend STLC with numbers.
+To the STLC given in TAPL, we add the following syntax and evaluation and typing rules:\\
+\begin{minipage}{0.45\textwidth}
+  \[ 
+  \begin{array}{lccr}
+    t  & \coloneq  &                  &\emph{terms}\\
+    &           & {x}              &\emph{variable}\\
+    &           & \lambda{x:T}.t   &\emph{abstraction}\\
+    &           & {t~t}            &\emph{application}\\
+    &           & \mathtt{zero}    &\emph{constant zero}\\
+    &           & \mathtt{succ}~t  &\emph{successor}\\ 
+    v  & \coloneq  &                  &\emph{values} \\
+    &           & \lambda{x}.t     &\emph{abstraction value}\\
+    &           & nv               &\emph{numeric value}\\
+  \end{array}
+  \]
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+  \[
+    \begin{array}{lccr}
+      nv & \coloneq  &                  &\emph{numeric values}\\
+      &           & \mathtt{zero}    &\emph{zero value}\\
+      &           & \mathtt{succ}~nv &\emph{successor value}\\
+      \\
+      T  & \coloneq  &                  &\emph{types}\\
+      &           & T \rightarrow T  &\emph{function type} \\
+      &           & \mathtt{Nat}     &\emph{type of natural numbers} \\
+    \end{array}
+  \]
+\end{minipage}
+\hfill
+\vspace{1em}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\mapsto t_1^{\prime}$}
+      \RightLabel{\textsc{E-App1}}
+      \UnaryInfC{$t_1\ t_2 \mapsto t_1^{\prime}\ t_2$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_2\mapsto t_2^{\prime}$}
+      \RightLabel{\textsc{E-App2}}
+      \UnaryInfC{$v_1\ t_2\mapsto v_1\ t_2^{\prime}$}
+    \end{prooftree}
+  \end{minipage}
+\end{minipage}
+\hfill
+\vspace{1em}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{E-AppAbs}}
+      \UnaryInfC{$(\lambda x:T.t_{12})\ v_2\mapsto t_{12}[x/v_2]$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \RightLabel{\textsc{E-Succ}}
+      \UnaryInfC{$\mathtt{succ}\ t \mapsto \mathtt{succ}\ t^{\prime}$}
+    \end{prooftree}
+  \end{minipage}
+\end{minipage}
+\hfill
+\vspace{2em}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{$x:T\in\Gamma$}
+      \RightLabel{\textsc{T-Var}}
+      \UnaryInfC{$\Gamma\vdash x:T$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.35\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{T-Zero}}
+      \UnaryInfC{$\Gamma\vdash\mathtt{zero}:\mathtt{Nat}$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.35\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma,x:T_1 : T_2$}
+      \RightLabel{\textsc{T-Abs}}
+      \UnaryInfC{$\Gamma\vdash \lambda x:T_1. t_2 : T_1\rightarrow T_2$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+\end{minipage}
+\hfill
+\vspace{1em}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash t_1:T_{11}\rightarrow T_{12}$}
+      \AxiomC{$\Gamma\vdash t_2:T_{11}$}
+      \RightLabel{\textsc{T-App}}
+      \BinaryInfC{$\Gamma\vdash t_1\ t_2:T_{12}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\mathtt{Nat}$}
+      \RightLabel{\textsc{T-Succ}}
+      \UnaryInfC{$\Gamma\vdash \mathtt{succ}\ t:\mathtt{Nat}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+\end{minipage}
+\hfill
+
+\begin{minipage}{\textwidth}
+  \vspace{2em}
+  \[
+    \begin{array}{lcrr }
+      x[s/x] & \coloneq & s\\
+      y[s/x] & \coloneq & y & \text{ if } x\neq y\\
+      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T. t_1[s/x] & \text{ if } y\neq x \text{ and } y\notin FV(s)\\
+      (t_1\ t_2)[s/x] & \coloneq & t_1[s/x]\ t_2[s/x]\\
+      \mathtt{zero}[s/x] & \coloneq & \mathtt{zero}\\
+      (\mathtt{succ}\ t)[s/x] & \coloneq & \mathtt{succ}\ t[s/x]
+    \end{array}
+  \]
+  \hfill \vspace{1em}
+\end{minipage}
+Note that we use the notation $t[s/x]$ instead of $[x\mapsto s]t$ used in the book.\\
+Extend the following proofs form Tapl to this extended language
+
+\begin{theorem}\emph{Preservation of Types under Substitution (9.3.8)}\\
+  If $\Gamma, x:S\vdash t:T$ and $\Gamma \vdash s:S$, then $\Gamma t[s/x]:T$.
+\end{theorem}
+\begin{theorem}\emph{Progress (9.3.5)}\\
+  Let $t$ be a closed, well-typed term, that is $\vdash t:T$ for some $T$, then either $t$ is a value or there is some $t^{\prime}$ with $t\mapsto t^{\prime}$
+\end{theorem}
+\begin{theorem}\emph{Preservation (9.3.9)}\\
+  If $\Gamma\vdash t:T$ and $t\mapsto t^{\prime}$, then $\Gamma \vdash t^{\prime}:T$.
+\end{theorem}
+You do not need to repeat the parts of the proof that are identical to the unmodified STLC.
+Whenever some part of the proof is identical, note why that is the case.
+
+\section{Environments and free variables}
+We will now consider some properties of the typing environments in STLC w.r.t. free variables.\\
+Show the following using induction on the typing derivation.
+\begin{enumerate}
+  \item Prove: If $\Gamma \vdash t : T$ and $x \notin \mathrm{dom}(\Gamma)$, then for all values $v$ we have $t[v/x] = t$.
+  \item Prove: If $\Gamma \vdash t : T$, then $FV(t) \subseteq \mathrm{dom}(\Gamma)$.
+\end{enumerate}
+
+\section{Compilation to untyped lambda calculus}
+
+\begin{minipage}{0.45\textwidth}
+  \[
+    \begin{array}{lccr}
+      t &\coloneq & \cdots &\emph{terms} \\
+      & &\mathtt{true} & \emph{constant true} \\
+      & & \mathtt{false} & \emph{constant false} \\
+      & & \mathtt{if}~t~\mathtt{then}~t~\mathtt{else}~t & \emph{condition} \\
+    \end{array}
+  \]
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+  \[
+    \begin{array}{lccr}
+      \\
+      v &\coloneq&  \cdots &\emph{values} \\
+      && \mathtt{true} & \emph{true value} \\
+      &&\mathtt{false} & \emph{false value} \\
+      \\
+      T &\coloneq&  \cdots &\emph{types} \\
+      & &  \mathtt{Bool} & \emph{type of booleans}
+    \end{array}
+  \]
+\end{minipage}
+\hfill
+\vspace{2em}
+
+\begin{minipage}{\textwidth}
+  \begin{prooftree}
+    \AxiomC{$t_1\mapsto t_1^{\prime}$}
+    \RightLabel{\textsc{E-If}}
+    \UnaryInfC{$\mathtt{if}\ t_1\ \mathtt{then}\ t_2\ \mathtt{else}\ t_3 \mapsto
+    \mathtt{if}\ t_1\ \mathtt{then}\ t_2\ \mathtt{else}\ t_3$}
+  \end{prooftree}
+  \hfill
+\end{minipage}
+\begin{minipage}{\textwidth}
+  \begin{prooftree}
+    \AxiomC{\quad}
+    \RightLabel{\textsc{E-IfTrue}}
+    \UnaryInfC{$\mathtt{if}\ \mathtt{true}\ \mathtt{then}\ t_2\ \mathtt{else}\ t_3 \mapsto t_2$}
+  \end{prooftree}
+  \hfill
+\end{minipage}
+\begin{minipage}{\textwidth}
+  \begin{prooftree}
+    \AxiomC{\quad}
+    \RightLabel{\textsc{E-IfFalse}}
+    \UnaryInfC{$\mathtt{if}\ \mathtt{false}\ \mathtt{then}\ t_2\ \mathtt{else}\ t_3 \mapsto t_3$}
+  \end{prooftree}
+  \hfill
+\end{minipage}
+\vspace{1em}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{T-True}}
+      \UnaryInfC{$\Gamma\vdash \mathtt{true} : \mathtt{Bool}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{\quad}
+      \RightLabel{\textsc{T-False}}
+      \UnaryInfC{$\Gamma\vdash \mathtt{false}:\mathtt{Bool}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+  \begin{minipage}{\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma\vdash t_1:\mathtt{Bool}$}
+      \AxiomC{$\Gamma\vdash t_2:T$}
+      \AxiomC{$\Gamma\vdash t_3:T$}
+      \RightLabel{\textsc{T-If}}
+      \TrinaryInfC{$\Gamma\vdash \mathtt{if}\ t_1\ \mathtt{then}\ t_2\ \mathtt{else}\ t_3 :T$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{2em}
+\end{minipage}
+We can extend the $\mathtt{erase}$ function defined in TAPL (Definition~9.5.1) to a new function $\llbracket\cdot\rrbracket$
+that translates terms of the extended calculus to pure untyped lambda calculus: 
+\begin{align*}
+  \llbracket x \rrbracket &\coloneq & x \\
+  \llbracket t_1~t_2 \rrbracket &\coloneq&  \llbracket t_1 \rrbracket~\llbracket t_2 \rrbracket \\
+  \llbracket \lambda x:T . t \rrbracket &\coloneq& \lambda x. \llbracket t \rrbracket \\
+  \llbracket \mathtt{true}\rrbracket &\coloneq& \lambda{x}.\lambda{y}.x \\
+  \llbracket \mathtt{false}\rrbracket &\coloneq& \lambda{x}.\lambda{y}.y \\
+  \llbracket \mathtt{if}~t_1~\mathtt{then}~t_2~\mathtt{else}~t_3 \rrbracket &\coloneq& (\llbracket t_1 \rrbracket~(\lambda{x}.\llbracket t_2 \rrbracket)~(\lambda{x}.\llbracket t_3 \rrbracket))~(\lambda{y}.y)
+\end{align*}
+\emph{(In Latex, $\llbracket$ and $\rrbracket$ are written as \textbackslash llbracket and \textbackslash rrbracket. 
+This might require you to import and/or install the stmaryrd package)}
+
+\begin{itemize}
+  \item Prove: $\llbracket v \rrbracket$ is a value.
+  \item Prove: If $t \mapsto t'$ in the calculus above, then $\llbracket t\rrbracket \mapsto^{\{1-3\}} \llbracket t'\rrbracket$
+      in the untyped call-by-value lambda calculus.
+\end{itemize}
+
+Here, \(\mapsto^{\{1-3\}}\) is defined by:\\
+\begin{minipage}{\textwidth}
+  \vspace{1em}
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \UnaryInfC{$t\mapsto^{\{1-3\}}t^{\prime}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \AxiomC{$t^{\prime}\mapsto t^{\prime\prime}$}
+      \BinaryInfC{$t\mapsto^{\{1-3\}} t^{\prime\prime}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t\mapsto t^{\prime}$}
+      \AxiomC{$t^{\prime}\mapsto t^{\prime\prime}$}
+      \AxiomC{$t^{\prime\prime}\mapsto t^{\prime\prime\prime}$}
+      \TrinaryInfC{$t\mapsto^{\{1-3\}} t^{\prime\prime\prime}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+In other words, $t\mapsto^{\{1-3\}} t^{\prime}$ if $t$ evaluates to $t^{\prime}$ in at most three steps.
+
+\section{Types and Programming Languages}
+Read chapters 8-10 of Types and Programming languages and post your questions in the dedicated forum thread.
