@@ -16,7 +16,7 @@ If they exist, please write down \(\Gamma\) and \(T\). If not, a short note is e
 
 \section{Extension with Numbers}
 In this task, we extend STLC with numbers.
-To the STLC given in TAPL, we add the following syntax and evaluation and typing rules:\\
+To the STLC given in TAPL (without booleans (fig. 9.1)), we add the following syntax and evaluation and typing rules:\\
 \begin{minipage}{0.45\textwidth}
   \[ 
   \begin{array}{lccr}
@@ -107,7 +107,7 @@ To the STLC given in TAPL, we add the following syntax and evaluation and typing
   \end{minipage}
   \begin{minipage}{0.35\textwidth}
     \begin{prooftree}
-      \AxiomC{$\Gamma,x:T_1 : T_2$}
+      \AxiomC{$\Gamma,x:T_1 \vdash t_2: T_2$}
       \RightLabel{\textsc{T-Abs}}
       \UnaryInfC{$\Gamma\vdash \lambda x:T_1. t_2 : T_1\rightarrow T_2$}
     \end{prooftree}
@@ -144,7 +144,8 @@ To the STLC given in TAPL, we add the following syntax and evaluation and typing
     \begin{array}{lcrr }
       x[s/x] & \coloneq & s\\
       y[s/x] & \coloneq & y & \text{ if } x\neq y\\
-      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T. t_1[s/x] & \text{ if } y\neq x \text{ and } y\notin FV(s)\\
+      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T. t_1[s/x] & \text{ if } y\neq x\\
+      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T.t_1 & \text{ if } y=x \text{ of } y\in FV(s)\\
       (t_1\ t_2)[s/x] & \coloneq & t_1[s/x]\ t_2[s/x]\\
       \mathtt{zero}[s/x] & \coloneq & \mathtt{zero}\\
       (\mathtt{succ}\ t)[s/x] & \coloneq & \mathtt{succ}\ t[s/x]
@@ -275,40 +276,11 @@ This might require you to import and/or install the stmaryrd package)}
 
 \begin{itemize}
   \item Prove: $\llbracket v \rrbracket$ is a value.
-  \item Prove: If $t \mapsto t'$ in the calculus above, then $\llbracket t\rrbracket \mapsto^{\{1-3\}} \llbracket t'\rrbracket$
+  \item Prove: If $t \mapsto^* v$ in the calculus above, then $\llbracket t\rrbracket \mapsto \llbracket v\rrbracket$
       in the untyped call-by-value lambda calculus.
 \end{itemize}
-
-Here, \(\mapsto^{\{1-3\}}\) is defined by:\\
-\begin{minipage}{\textwidth}
-  \vspace{1em}
-  \begin{minipage}{0.2\textwidth}
-    \begin{prooftree}
-      \AxiomC{$t\mapsto t^{\prime}$}
-      \UnaryInfC{$t\mapsto^{\{1-3\}}t^{\prime}$}
-    \end{prooftree}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.3\textwidth}
-    \begin{prooftree}
-      \AxiomC{$t\mapsto t^{\prime}$}
-      \AxiomC{$t^{\prime}\mapsto t^{\prime\prime}$}
-      \BinaryInfC{$t\mapsto^{\{1-3\}} t^{\prime\prime}$}
-    \end{prooftree}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \begin{prooftree}
-      \AxiomC{$t\mapsto t^{\prime}$}
-      \AxiomC{$t^{\prime}\mapsto t^{\prime\prime}$}
-      \AxiomC{$t^{\prime\prime}\mapsto t^{\prime\prime\prime}$}
-      \TrinaryInfC{$t\mapsto^{\{1-3\}} t^{\prime\prime\prime}$}
-    \end{prooftree}
-  \end{minipage}
-  \hfill
-  \vspace{1em}
-\end{minipage}
-In other words, $t\mapsto^{\{1-3\}} t^{\prime}$ if $t$ evaluates to $t^{\prime}$ in at most three steps.
+Here, $\mapsto^*$ refers to multi-step evaluation.
+You can assume $\llbracket t_1 \rrbracket [\llbracket t_2\rrbracket /x] = \llbracket t_1[t_2/x]\rrbracket$.
 
 \section{Types and Programming Languages}
 Read chapters 8-10 of Types and Programming languages and post your questions in the dedicated forum thread.
