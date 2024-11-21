@@ -1,0 +1,222 @@
+\section{STLC with Extensions}
+
+Give derivations for the following typing judgements,
+if this possible for some substitutions of the $\square$s\footnote{Each $\square$ can be substituted independently.}.
+If not, just state that it is not possible.\\
+\begin{enumerate}
+  \item $\square\vdash \lambda{b:\mathtt{Bool}}. \mathtt{if}\ b\ \mathtt{then}\ (\mathtt{iszero}\ p.1)\ \mathtt{else}\ (\mathtt{iszero}\ p.2) : \square$ 
+    \\ Extensions: booleans, pairs (11-5)
+  \item $\vdash \lambda{x:\square}. (\mathtt{case}\ x\ \mathtt{of}\ \mathtt{inl}\ y\Rightarrow{\mathtt{iszero}\ y}\mid\mathtt{inr}\ z\Rightarrow{z}) : \square\to\mathtt{Bool}$ \\
+    Extensions: booleans, numbers, sums (11-9) 
+  \item   $\vdash \lambda{x:\mathtt{A}}. \square : \mathtt{A} \to (\mathtt{A}+(\mathtt{A}\times\mathtt{A})) $\\
+    Extensions: base types (11-1), pairs (11-5), sums(11-9) 
+  \item $\vdash \mathtt{case}\ \{a=\mathtt{true}, b=\mathtt{false}\}\ \mathtt{of}<\hspace{-0.2em}a=x\hspace*{-0.1em}>\Rightarrow x : \mathtt{Bool} $\\
+    Extensions: booleans, records(11-7), variants(11-11)
+  \item   $\square \vdash \mathtt{case}\ p\ \mathtt{of}<\hspace{-0.2em}c=x\hspace{-0.1em}>\Rightarrow\ \mathtt{succ}\ x : \mathtt{Nat} $ \\
+    Extensions: numbers, variants(11-11) 
+\end{enumerate}
+
+\section{The \texttt{Option} type}
+We want to extend STLC with $\mathtt{Option}\ t$
+\footnote{similar to $\mathtt{Maybe}\ t$ in Haskell~(with cases $\mathtt{Nothing}$ and $\mathtt{Just}\ t$) or $\mathtt{optional<}t\mathtt{>}$ in C++.
+} \emph{directly} (i.e., not via sum types). To do so, we first extend the syntax as follows:\\
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \[
+      \begin{array}{rclr}
+        t &\coloneq& \cdots &\emph{terms} \\
+        &&\mathtt{None}&\textit{} \\
+        &&\mathtt{Some}~t&\textit{} \\
+        &&\mathtt{case}~t~\mathtt{of}~\mathtt{None}\Rightarrow t\mid\mathtt{Some}~x\Rightarrow t \\
+        \phantom{\quad}\\
+        \phantom{\quad}\\
+      \end{array}
+    \]
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \[
+      \begin{array}{rclr}
+        v &\coloneq& \cdots&\textit{values:} \\
+        &&\mathtt{None}&\textit{} \\
+        &&\mathtt{Some}~v&\textit{} \\
+        \\
+        T &\coloneq& \cdots&\textit{types:} \\
+        &&\mathtt{Option}~T&\textit{}
+      \end{array}
+    \]
+  \end{minipage}
+  \hfill
+  \vspace{1em}
+\end{minipage}
+
+\begin{enumerate}
+  \item Give small-step evaluation semantics for the extension of STLC with $\mathtt{Option}$.
+  \item Give appropriate typing rules.
+  \item Prove soundness (progress and preservation) for STLC with $\mathtt{Option}$ and pairs (11-5).
+\end{enumerate}
+
+\section{Implementation}
+This task is an implementation task. 
+You can use a programming language of your choice.
+However, we recommend that you use a language that 
+\begin{itemize}
+  \item allows you to easily define and
+    pattern match on data types or a similar construct (also called `\verb|enum|', or `tagged/discriminated union' in some languages), and
+  \item allows you to define recursive functions on them
+\end{itemize}
+E.g.,
+Haskell,
+Scala\footnote{Use case classes or enums (Scala 3)!},
+most dialects of ML, 
+Rust\footnote{Note that manual memory management may be an additional challenge here!},
+many LISP dialects\footnote{Here, you can use sexps to represent terms.},
+$\dots$.
+
+\begin{enumerate}
+  \item Implement a typechecker for simply typed lambda-calculus, extended with $\mathtt{unit}$.\\
+    You do \emph{not} have to implement a parser or interpreter. Just define data types for terms and types and directly call the function
+    with some example values for testing.\\
+    \emph{Hint: For variables you can simply use the $\mathtt{String}$ data type in your chosen language}
+  \item Extend your typechecker with at least one of the extensions described in Chapter 11 of TAPL.
+\end{enumerate}
+
+\section{Substructural type systems}
+In the lecture on STLC, we made some choices about typing contexts:
+\begin{itemize}
+  \item Each variable can only occur at most once in each environment (via well-formedness).
+  \item Bindings in the typing context can be reodered
+  \item Bindings cann be added to the typing context
+\end{itemize}
+All of those are called \emph{structural} properties.\\
+We will now consider a different set of choices we can make, leading to the following calculus
+\footnote{Inspired by \emph{Linear Haskell: practical linearity in a higher-order polymorphic language} \url{https://doi.org/10.1145/3158093}}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \[
+      \begin{array}{lccr}
+        t & \coloneq & & \emph{Terms}\\
+        & & x & \emph{Variables}\\
+        && t_1\ t_2 & \emph{Applications}\\
+        && \lambda_1 x:T.t & \emph{Abstractions}\\
+        && (t, t) & \emph{Pairs}\\
+        && \mathtt{case}\ t \ \mathtt{of}\ (x,x) \Rightarrow t & \emph{Deconstruction}\\
+        \\
+        v & \coloneq & & \emph{Values}\\
+        & & \lambda_1 x:T.t & \emph{Function Values}\\
+        && (v,v) & \emph{Pair Values}\\
+        \\
+      \end{array}
+    \]
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \[
+      \begin{array}{lccr}
+        T & \coloneq && \emph{Types}\\
+        && T\rightarrow_1 T & \emph{(Linear) Function Type}\\
+        && T \times T & \emph{Product Type}\\
+        \\
+        \Gamma & & \emph{Contexts}\\
+        & & \emptyset & \emph{Empty Contexts}\\
+        & & \Gamma, x :_1 : T &\emph{(linear) binding}\\
+        \phantom{\quad}\\
+        \phantom{\quad}\\
+        \phantom{\quad}\\
+        \phantom{\quad}
+      \end{array}
+    \]
+  \end{minipage}
+  \hfill
+  \vspace{0.5em}
+\end{minipage}
+\center{\textbf{Context Splitting}}\quad
+$\Gamma = \Gamma_1\circ\Gamma_2$\\
+\vspace{1em}
+\begin{minipage}{0.2\textwidth}
+  \begin{prooftree}
+    \AxiomC{\quad}
+    \UnaryInfC{$\emptyset = \emptyset \circ \emptyset $}
+  \end{prooftree}
+\end{minipage}
+\hfill
+\begin{minipage}{0.35\textwidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_1$}
+    \UnaryInfC{$\Gamma,x:_1 T = (\Gamma_1,x:_1 T) \circ \Gamma_2$}
+  \end{prooftree}
+\end{minipage}
+\hfill
+\begin{minipage}{0.35\textwidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma= \Gamma_1\circ\Gamma_2$}
+    \UnaryInfC{$\Gamma,x:_1 T = \Gamma_1 \circ (\Gamma_2,x:_1 T)$}
+  \end{prooftree}
+\end{minipage}
+\hfill
+\vspace{1em}
+\center{\textbf{Typing Rules}}\quad $\Gamma\vdash t:T$\\
+\vspace{1em}
+\begin{minipage}{0.45\textwidth}
+  \begin{prooftree}
+    \AxiomC{\quad}
+    \RightLabel{T-Var}
+    \UnaryInfC{$x:_1 T \vdash x:T$}
+  \end{prooftree}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma x:_1 T_1 \vdash t:T_2$}
+    \AxiomC{$x\notin\mathrm{dom}(\Gamma)$}
+    \RightLabel{\textsc{T-Abs}}
+    \BinaryInfC{$\Gamma\vdash \lambda_a x:T_1.t : T_2\rightarrow_1 T$}
+  \end{prooftree}
+\end{minipage}\hfill\vspace{1em}
+\begin{prooftree}
+  \AxiomC{$\Gamma_1\vdash t_1:T_2\rightarrow_1 T$}
+  \AxiomC{$\Gamma_2\vdash t_2:T_2$}
+  \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
+  \RightLabel{\textsc{T-App}}
+  \TrinaryInfC{$\Gamma \vdash t_1\ t_2 :T$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
+  \AxiomC{$\Gamma_1\vdash t_1:T_{21}\times T_{22}$}
+  \AxiomC{$\Gamma_2, x_1:_1 T_{21},x_2:_1 T_{22}\vdash t_2:T$}
+  \RightLabel{\textsc{T-Match}}
+  \TrinaryInfC{$\Gamma\vdash\mathtt{case}\ t_1\ \mathtt{of}\ (x_1,x_2)\Rightarrow t_2 :T$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
+  \AxiomC{$\Gamma_1\vdash t_1:T_1$}
+  \AxiomC{$\Gamma_2\vdash t_2:T_2$}
+  \RightLabel{\textsc{T-Pair}}
+  \TrinaryInfC{$\Gamma\vdash (t_1,t_2) : T_1 \times T_2$}
+\end{prooftree}
+Some remarks:
+\begin{itemize}
+  \item For simplicity, assume that the evaluation rules for $\rightarrow_1$ are like for $\rightarrow$ in STLC.
+  \item Assume that (in addition to the constructions there), we have some set of base types $A$, $B$, $\dots$.
+  \item Note that, although we write \(\Gamma = \Gamma_1\circ\Gamma_2\), the order in \(\Gamma\) is \emph{not}
+    uniquely determined by \(\Gamma_1\) and \(\Gamma_2\).
+\end{itemize}
+
+
+\begin{enumerate}
+  \item Show that \emph{Exchange} still holds, i.e. prove: \\
+    If $\Gamma_a,x_a:_1 T_a, x_b :_1 T_b, \Gamma_b\vdash t:T$, then 
+    $\Gamma_a, x_b:_1 T_b, x_a:_a T_a, \Gamma_b \vdash t:T$
+  \item Show that \emph{Weakening} does not\\
+    That is, find $\Gamma$, $x$, $t$, $T$ and $T^{\prime}$ such that 
+    $\Gamma\vdash t:T$ and $x\notin\mathrm{dom}(\Gamma)$ but
+    $\Gamma, x:_1 T^{\prime}\vdash t:T$ does \emph{not} hold
+  \item What do those properties mean for programming in a language based on this calculus?
+  \item Can you think of a situation where this might be useful
+  \item Can we add extensions to recover the features we lost on the term level?\\
+    That is, define an extension to the syntax of terms along with evaluation and typing rules.
+    Then show (informally) how to use those
+\end{enumerate}
+
+\section{Types and Programming Languages}
+Read trough chapter 11 of Types and Programming Languages and post your questions in the dedicated forum thread.
