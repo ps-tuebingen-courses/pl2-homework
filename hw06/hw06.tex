@@ -157,51 +157,29 @@ $\Gamma = \Gamma_1\circ\Gamma_2$\\
 \vspace{1em}
 \center{\textbf{Typing Rules}}\quad $\Gamma\vdash t:T$\\
 \vspace{1em}
-\begin{minipage}{\textwidth}
-  \begin{minipage}{0.2\textwidth}
-    \begin{prooftree}
-      \AxiomC{\quad}
-      \RightLabel{T-Var}
-      \UnaryInfC{$x:_1 T \vdash x:T$}
-    \end{prooftree}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.75\textwidth}
-    \begin{prooftree}
-      \AxiomC{$\Gamma_1\vdash t_1:T_2\rightarrow_1 T$}
-      \AxiomC{$\Gamma_2\vdash t_2:T_2$}
-      \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
-      \RightLabel{\textsc{T-App}}
-      \TrinaryInfC{$\Gamma \vdash t_1\ t_2 :T$}
-    \end{prooftree}
-    \hfill
-  \end{minipage} 
- \hfill
-  \vspace{1em}
+\begin{minipage}{0.45\textwidth}
+  \begin{prooftree}
+    \AxiomC{\quad}
+    \RightLabel{T-Var}
+    \UnaryInfC{$x:_1 T \vdash x:T$}
+  \end{prooftree}
 \end{minipage}
-
-\begin{minipage}{\textwidth}
-  \begin{minipage}{0.35\textwidth}
-    \begin{prooftree}
-      \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
-      \AxiomC{$\Gamma_1 \vdash t:T$}
-      \RightLabel{\textsc{T-Ctr}}
-      \BinaryInfC{$\Gamma \vdash t:T$}
-    \end{prooftree}
-    \hfill
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.5\textwidth}
-    \begin{prooftree}
-      \AxiomC{$\Gamma x:_1 T_1 \vdash t:T_2$}
-      \AxiomC{$x\notin\mathrm{dom}(\Gamma)$}
-      \RightLabel{\textsc{T-Abs}}
-      \BinaryInfC{$\Gamma\vdash \lambda_a x:T_1.t : T_2\rightarrow_1 T$}
-    \end{prooftree}
-  \end{minipage}
-  \vspace{1em}
-\end{minipage}
-
+\hfill
+\begin{minipage}{0.45\textwidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma x:_1 T_1 \vdash t:T_2$}
+    \AxiomC{$x\notin\mathrm{dom}(\Gamma)$}
+    \RightLabel{\textsc{T-Abs}}
+    \BinaryInfC{$\Gamma\vdash \lambda_a x:T_1.t : T_2\rightarrow_1 T$}
+  \end{prooftree}
+\end{minipage}\hfill\vspace{1em}
+\begin{prooftree}
+  \AxiomC{$\Gamma_1\vdash t_1:T_2\rightarrow_1 T$}
+  \AxiomC{$\Gamma_2\vdash t_2:T_2$}
+  \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
+  \RightLabel{\textsc{T-App}}
+  \TrinaryInfC{$\Gamma \vdash t_1\ t_2 :T$}
+\end{prooftree}
 \begin{prooftree}
   \AxiomC{$\Gamma = \Gamma_1\circ\Gamma_2$}
   \AxiomC{$\Gamma_1\vdash t_1:T_{21}\times T_{22}$}
