@@ -130,8 +130,8 @@ We will now consider a different set of choices we can make, leading to the foll
   \hfill
   \vspace{0.5em}
 \end{minipage}
-\center{\textbf{Context Splitting}}\quad
-$\Gamma = \Gamma_1\circ\Gamma_2$\\
+\begin{center}{\textbf{Context Splitting}}\quad
+$\Gamma = \Gamma_1\circ\Gamma_2$\end{center}
 \vspace{1em}
 \begin{minipage}{0.2\textwidth}
   \begin{prooftree}
@@ -155,7 +155,7 @@ $\Gamma = \Gamma_1\circ\Gamma_2$\\
 \end{minipage}
 \hfill
 \vspace{1em}
-\center{\textbf{Typing Rules}}\quad $\Gamma\vdash t:T$\\
+\begin{center}{\textbf{Typing Rules}}\quad $\Gamma\vdash t:T$\end{center}
 \vspace{1em}
 \begin{minipage}{0.45\textwidth}
   \begin{prooftree}
@@ -167,10 +167,10 @@ $\Gamma = \Gamma_1\circ\Gamma_2$\\
 \hfill
 \begin{minipage}{0.45\textwidth}
   \begin{prooftree}
-    \AxiomC{$\Gamma x:_1 T_1 \vdash t:T_2$}
+    \AxiomC{$\Gamma, x:_1 T_1 \vdash t:T_2$}
     \AxiomC{$x\notin\mathrm{dom}(\Gamma)$}
     \RightLabel{\textsc{T-Abs}}
-    \BinaryInfC{$\Gamma\vdash \lambda_a x:T_1.t : T_2\rightarrow_1 T$}
+    \BinaryInfC{$\Gamma\vdash \lambda_a x:T_1.t : T_1\rightarrow_1 T_2$}
   \end{prooftree}
 \end{minipage}\hfill\vspace{1em}
 \begin{prooftree}
