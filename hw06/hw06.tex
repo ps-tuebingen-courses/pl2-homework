@@ -10,7 +10,7 @@ If not, just state that it is not possible.\\
     Extensions: booleans, numbers, sums (11-9) 
   \item   $\vdash \lambda{x:\mathtt{A}}. \square : \mathtt{A} \to (\mathtt{A}+(\mathtt{A}\times\mathtt{A})) $\\
     Extensions: base types (11-1), pairs (11-5), sums(11-9) 
-  \item $\vdash \mathtt{case}\ \{a=\mathtt{true}, b=\mathtt{false}\}\ \mathtt{of}<\hspace{-0.2em}a=x\hspace*{-0.1em}>\Rightarrow x : \mathtt{Bool} $\\
+  \item $\vdash \mathtt{case}\ \{a=\mathtt{true}, b=\mathtt{false}\}\ \mathtt{of}<a=x>\Rightarrow x : \square $\\
     Extensions: booleans, records(11-7), variants(11-11)
   \item   $\square \vdash \mathtt{case}\ p\ \mathtt{of}<\hspace{-0.2em}c=x\hspace{-0.1em}>\Rightarrow\ \mathtt{succ}\ x : \mathtt{Nat} $ \\
     Extensions: numbers, variants(11-11) 
