@@ -1,0 +1,54 @@
+\section{Normalization}
+Consider the proof of normalization (Theorem 12.1.6 in TAPL) for STLC with base types.
+Extend this proof to STLC with any of the extension defined in the book. 
+Do not use the unit type, as the only new term $\mathtt{unit}$ is already in normal form and thus the proof is trivial.\\
+\emph{Hint: extend defninitoin 12.1.2 and lammas 12.1.3-12.1.5 using the extended language, then the normalization theorem follows}
+
+\section{Bidirectional Typing}
+Consider the system for Bidirectional Typing of STLC from the lecture, with the following rules for applications
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma\vdash t_1 \Rightarrow T_{11}\rightarrow T_{12}$}
+      \AxiomC{$\Gamma\vdash t_2\Leftarrow T_{11}$}
+      \RightLabel{$\Rightarrow$\textsc{App}}
+      \BinaryInfC{$\Gamma\vdash t_1\ t_2 \Rightarrow T_{12}$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma\vdash t_2 \Rightarrow T_{11}$}
+      \AxiomC{$\Gamma\vdash t_1 \Leftarrow T_{11}\rightarrow T_{12}$}
+      \RightLabel{$\Leftarrow$\textsc{App}}
+      \BinaryInfC{$\Gamma\vdash t_1\ t_2 \Leftarrow T_{12}$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \hfill
+  \vspace{2em}
+\end{minipage}
+\begin{enumerate}
+  \item Give a typing derivation for the following term, once for each variant for \textsc{App}. Add type ascriptions where necessary\\
+    $$ (\lambda f. \lambda x. f\ x)\ (\lambda y.y)\ \mathtt{unit}$$
+  \item Pick an extension from TAPL 11.5-11.12. For each new typing rule
+    \begin{enumerate}
+      \item State if the rule can be used for Inference, Checking or both in the bidirectional system (without adjusting the rule)
+      \item Write down the corresponding bidirectional rule(s)
+    \end{enumerate}
+\end{enumerate}
+
+\section{Constraint-based Typing}
+\subsubsection{}
+
+\begin{enumerate}
+  \item Implement type reconstruction with Constraint-based Typing for STLC with the unit type 
+    (without type annotations on lambdas) as shown in the lecture.
+    Templates in Scala and rust will be provied in the forum.
+  \item Choose one extension from TAPL chapter 11, and propose Constraint-Typing rules for it.
+  \item Extend your type inference algorithm with the rules you came up with above
+\end{enumerate}
+
+\section{Reading}
+Read through chapters 12 and 13 of TAPL and post your questions in the dedicated forum thread. 
+You can also ask questions about bidirectional and constraint based inference dicussed only in the lecture.
