@@ -1,0 +1,31 @@
+\section{References}
+Consider the following terms in STLC with references and assume the extensions used in each term are available 
+\begin{itemize}
+  \item $\mathtt{ref}\ \mathtt{True} \coloneq \mathtt{False}$
+  \item $!(\mathtt{ref}\ \mathtt{unit})$
+  \item $\mathtt{let}\ x = \mathtt{ref}\ \mathtt{Zero}\ \mathtt{in}\ \mathtt{Succ}\ (!x)$
+  \item $\mathtt{let}\ x = \mathtt{ref}\ (\lambda y.\mathtt{Succ}\ y)\ \mathtt{in}\ (!x)\ ((!x)\ \mathtt{Zero})$
+\end{itemize}
+
+For each of these terms, perform the following tasks
+\begin{enumerate}
+  \item Find a store typing such that the term is typable 
+  \item Draw a typing derivation for the term
+  \item Evaluate the term to a value and give the store at each step of the evaluation
+\end{enumerate}
+
+As in TAPL, these terms use the shorthand $t_1;t_2$ for the term $(\lambda x:\mathtt{Unit}.t2)\ t_1$ where $x\notin FV(t2)$
+
+\section{Implementation}
+In this task we will implement STLC with references.
+You can use one of the templates provided in the forum.\\
+\emph{
+    The templates already implement some parts, among them capture-avoiding substitution.
+    You only have to change the parts marked with a \texttt{TODO}-comment.
+}
+
+\begin{enumerate}
+  \item Implement an interpreter for STLC with {\texttt{Unit}} and References, according to the rules in TAPL.
+  \item Implement a type checker for that language,
+    that assumes the store\footnote{and thus, the store typing} to \emph{always} be the empty one.
+\end{enumerate}

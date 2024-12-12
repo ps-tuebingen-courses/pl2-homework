@@ -68,5 +68,5 @@ def applyUnifier(unifier: Unifier, t: Type): Type = t match {
 def main() = {
     import Term.*
     // prints the result of typechecking (λx. x unit) (λy. y) in the empty context
-    print(typecheck(Nil, App(Abs("x", App(Var("x"), Var("x"))), Abs("y", Var("y")))))
+    print(typecheck(Nil, App(Abs("x", App(Var("x"), Unit)), Abs("y", Var("y")))))
 }
