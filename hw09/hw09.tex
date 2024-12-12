@@ -2,9 +2,9 @@
 Consider the following terms in STLC with references and assume the extensions used in each term are available 
 \begin{itemize}
   \item $\mathtt{ref}\ \mathtt{True} \coloneq \mathtt{False}$
-  \item $!(\mathtt{ref}\ \mathtt{unit})$
+  \item $0\coloneq \mathtt{Succ}\ \mathtt{Zero}; \mathtt{Pred}\ !(0)$
   \item $\mathtt{let}\ x = \mathtt{ref}\ \mathtt{Zero}\ \mathtt{in}\ \mathtt{Succ}\ (!x)$
-  \item $\mathtt{let}\ x = \mathtt{ref}\ (\lambda y.\mathtt{Succ}\ y)\ \mathtt{in}\ (!x)\ ((!x)\ \mathtt{Zero})$
+  \item $\mathtt{let}\ x = \mathtt{ref}\ (\lambda y:\mathtt{Nat}.\mathtt{Succ}\ y)\ \mathtt{in}\ (!x)\ ((!x)\ \mathtt{Zero})$
 \end{itemize}
 
 For each of these terms, perform the following tasks
@@ -15,6 +15,7 @@ For each of these terms, perform the following tasks
 \end{enumerate}
 
 As in TAPL, these terms use the shorthand $t_1;t_2$ for the term $(\lambda x:\mathtt{Unit}.t2)\ t_1$ where $x\notin FV(t2)$
+We also assume whenever a new store location needs to be allocated the lowest free store location is used, and there is no garbage collection.
 
 \section{Implementation}
 In this task we will implement STLC with references.
