@@ -78,13 +78,13 @@ def fresh_loc(st:Store) : Location = {
 
 def eval(t:Term,st:Store) : Option[Term] = {
   eval_once(t,st) match {
-    case None => None
-    case Some(t2) => if t == t2 then Some(t2)  else {eval(t,st)}
+    case (_,None) => None
+    case (new_st,Some(t2)) => if t == t2 then Some(t2)  else {eval(t,new_st)}
   }
 }
 
-def eval_once(t:Term,st:Store) : Option[Term] = {
-  Some(t) //TODO
+def eval_once(t:Term,st:Store) : (Store,Option[Term]) = {
+  (st,Some(t)) //TODO
 }
 
 def check(t:Term,env:Env) : Option[Type] = {

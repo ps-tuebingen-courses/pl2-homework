@@ -64,11 +64,11 @@ freshLoc st = freshLoci st 0
 
 eval :: Term -> Store -> Maybe Term 
 eval t st = case evaled of
-  Just t' -> if t' == t then evaled else eval t' st
-  Nothing -> Nothing
+  (new_st, Just t') -> if t' == t then Just t' else eval t' new_st
+  (_, Nothing) -> Nothing
   where evaled = evalOnce t st 
 
-evalOnce :: Term -> Store -> Maybe Term
+evalOnce :: Term -> Store -> (Store, Maybe Term)
 evalOnce _ _ = undefined -- TODO
 
 check :: Term -> Env -> Maybe Type 
