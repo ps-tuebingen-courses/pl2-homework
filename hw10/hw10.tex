@@ -1,0 +1,18 @@
+\section{System F}
+Consider the following terms in system F with their given types
+\[
+\begin{array}{lcr}
+\mathtt{id} =\lambda X.\lambda x:X.x &:& \forall X.X\rightarrow X\\
+\mathtt{double} = \lambda X.\lambda f:X\rightarrow X.\lambda x:X. f\ (f\ a) &:& \forall X.(X\rightarrow X)\rightarrow X\rightarrow X\\
+\mathtt{selfApp} = \lambda x:\forall X.X\rightarrow X. x\ [\forall X.X\rightarrow X]\ x &:& (\forall X.X\rightarrow X) \rightarrow (\forall X.X\rightarrow X)\\
+\mathtt{quadruple} = \lambda X.\mathtt{double}\ [X\rightarrow X]\ (\mathtt{double} [X]) &:&\forall X.(X\rightarrow X)\rightarrow X\rightarrow X
+\end{array}
+\]
+For each of these terms, draw a typing derivation with the rules given in TAPL (23-1)
+
+\section{Implementation}
+Implement a type checker for System F.
+Templates will be provided in the forum.
+
+\section{TAPL}
+Read through chapter 23 of TAPL and post your questions in the dedicated forum thread.
