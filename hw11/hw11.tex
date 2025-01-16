@@ -1,0 +1,110 @@
+\section{Subtyping}
+Assume the following syntax for types
+\[
+  \begin{array}{lcr}
+    \mathbb{B} &::= A \;|\; B \;|\; C \;|\; D \;|\; E \;|\; F &\textit{{\color{black}(base types)}}\\
+    T &::= \top{} \;|\; \bot{} \;|\; \{{l_i: T_i}_{i\in 1..{n}}\} \;|\; T \to T \;|\; \mathbb{B}
+  \end{array}
+\]
+We use $\top$ for \texttt{Top} and $\bot$ for \texttt{Bottom}.
+
+Additionally assume that the subtyping relation is defined by the following rules given in the lecture:\\
+\begin{itemize}
+  \item \textsc{S-RcdWidth}, \textsc{S-RcdPerm}, \textsc{S-RcdDepth}
+  \item \textsc{S-Arrow}
+  \item \textsc{S-Top}, \textsc{S-Bottom}
+  \item \textsc{S-Refl}, \textsc{S-Trans}
+\end{itemize}
+Along with the following subtyping relationships between base types 
+\[
+  \begin{array}{lcr}
+    D<:B & D<:C & B<:A\\
+    C<:A & E<:D & E<:F
+  \end{array}
+\]
+
+Show the following subtyping judgements by drawing a derivation tree:
+\begin{enumerate}
+  \item $\{x : C\} \to C \;<:\; \{x: D, y: B\} \to A$
+  \item $ (B\to C) \to D  \;<:\;  (A \to D) \to B$
+  \item $ (E \to \bot) \to \bot \;<:\; (F \to \bot) \to \bot$
+\end{enumerate}
+
+For the following pairs of types, what is their \emph{join} and what is their \emph{meet}?
+Look at the definition of \emph{join} and \emph{meet} in TAPL, that is, at Definition 16.3.1.
+\begin{enumerate}
+  \item $B$ and $C$
+  \item $F$ and $B$
+  \item $\{x: C, y: \top\}$ and $\{x: B, z: \bot\}$
+\end{enumerate}
+
+\section{Reflexivity and Transitivity of Subtyping}
+Assume that the subtyping relation is defined by the rules\\
+\begin{minipage}{\textwidth}
+  \vspace{1em}
+  \begin{minipage}{0.4\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\textsc{S-Base-Refl}}
+      \UnaryInfC{$\mathbb{B} <: \mathbb{B}$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\mathbb{B}_1<:\mathbb{B}_2$}
+      \AxiomC{$\mathbb{B}_2<:\mathbb{B}_3$}
+      \RightLabel{\textsc{S-Base-Trans}}
+      \BinaryInfC{$\mathbb{B}_1 <: \mathbb{B}_3$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \hfill
+\end{minipage}
+\vspace{1em}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$T_1<:S_1$}
+      \AxiomC{$S_2<:T_2$}
+      \RightLabel{\textsc{S-Arrow}}
+      \BinaryInfC{$S_1\rightarrow S_2 <: T_1<:T_2$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\textsc{S-Top}}
+      \UnaryInfC{$T <: \top$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+  \begin{minipage}{0.2\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\textsc{S-Bottom}}
+      \UnaryInfC{$\bot <: T$}
+    \end{prooftree}
+    \hfill
+  \end{minipage}
+\end{minipage}
+in addition to the ones \emph{for base types} defined above.
+The syntax of types is:
+\[
+  \begin{array}{lr}
+    T &::= \top{} \;|\; \bot{} \;|\; T \to T \;|\; \mathbb{B}
+  \end{array}
+\]
+with \(\mathbb{B}\) as above.
+
+\begin{itemize}
+  \item Show that Reflexivity holds for the subtyping relation\footnote{That is, \textsc{S-Refl} is \emph{admissible}.},
+    i.e., show that we have $T<:T$ for all types $T$.
+  \item  Show that Transitivity holds for the subtyping relation\footnote{That is, \textsc{S-Trans} is \emph{admissible}.},
+    i.e., show that (for all types $T_1$, $T_2$, $T_3$), if $T_1 <: T_2$ and $T_2 <: T_3$, then $T_1 <: T_3$.
+\end{itemize}
+
+\section{TAPL}
+Read chapters 15 and 16 in TAPL and post your questions in the dedicated forum thread.
+

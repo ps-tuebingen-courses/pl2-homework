@@ -1,0 +1,158 @@
+\section{Existential Types}
+Consider the abstract counter type from TAPL
+\begin{lstlisting}[mathescape=true]
+  counterADT = 
+    {*Nat,
+      {new = 1,
+       get = $\lambda$i:Nat.i,
+       inc = $\lambda$:Nat. succ(i)}}
+    as {$\exists$ Counter.
+      {new:Counter,
+       get:Counter$\to$Nat,
+       inc:Counter$\to$Counter}}; 
+\end{lstlisting}
+Give a typing derivation for the following terms 
+\begin{lstlisting}[mathescape=true]
+CounterADT: {$\exists$Counter, 
+   { new:Counter, 
+     get:Counter$\to$Nat, 
+     inc:Counter$\to$Counter}} 
+let {Counter,counter} = counterADT 
+  in counter.get (counter.inc counter.new) : Nat
+\end{lstlisting}
+You do not need to copy the derivation for \lstinline{CounterADT} in the derivation for the second term
+
+%\begin{prooftree}
+%  \AxiomC{}
+%  \UnaryInfC{$\vdash$1:Nat}
+%  \AxiomC{i:Nat $\in$ i:Nat}
+%  \UnaryInfC{i:Nat$\vdash$i:Nat}
+%  \UnaryInfC{$\vdash\lambda$i:Nat.i : Nat$\to$Nat}
+%  \AxiomC{i:Nat$\in$i:Nat}
+%  \UnaryInfC{i:Nat$\vdash$i:Nat}
+%  \UnaryInfC{i:Nat$\vdash$ inc(i):Nat}
+%  \UnaryInfC{$\vdash\lambda$i:Nat.inc(i):Nat}
+%  \TrinaryInfC{$\vdash$\{new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$i:Nat. succ(i)\}:
+%    \{new:Nat,get:Nat$\to$Nat,inc:Nat$\to$Nat\}}
+%  \UnaryInfC{$\vdash$CounterADT: \{$\exists$Counter, \{ new:Counter, get:Counter$\to$Nat, inc:Counter$\to$Counter\}\}}
+%\end{prooftree}
+%
+%We use the following abbreviations 
+%\begin{itemize}
+%  \item $\tau=$\{$\exists$Counter, \{ new:Counter, get:Counter$\to$Nat, inc:Counter$\to$Counter\}\},
+%  \item $\Gamma=$\lstinline{Counter,counter}$:\tau$.
+%  \item cnt $=$ counter, Cnt$=$Counter
+%\end{itemize}
+%\begin{prooftree}
+%  \AxiomC{$\vdots$}
+%  \UnaryInfC{$\vdash$ counterADT : $\tau$}
+%  \AxiomC{cnt :$\tau \in \Gamma$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt : $\tau$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt.get: Cnt$\to$Nat}
+%  \AxiomC{cnt : $\tau\in\Gamma$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt : $\tau$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt.inc : Cnt$\to$Cnt}
+%  \AxiomC{cnt : $\tau\in\Gamma$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt : $\tau$}
+%  \UnaryInfC{$\Gamma\vdash$ cnt.new : Cnt}
+%  \BinaryInfC{$\Gamma\vdash$ cnt.inc cnt.new : Cnt}
+%  \BinaryInfC{$\Gamma\vdash$ cnt.get (cnt.inc cnt.new) : Nat}
+%  \BinaryInfC{$\vdash$let \{Cnt,cnt\} = counterADT in cnt.get (cnt.inc cnt.new) : Nat}
+%\end{prooftree}
+Evaluate the second of these terms to a value (the first one already is a value)
+%\begin{lstlisting}[mathescape=true]
+%let {Counter,counter} = counterADT 
+%  in counter.get (counter.inc counter.new) : Nat
+%$\mapsto$
+%{new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.get (
+%  {new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.inc
+%  {new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.new
+%  )
+%$\mapsto$ 
+%$\lambda$i:Nat.i (
+%  {new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.inc
+%  {new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.new
+%  )
+%$\mapsto$ 
+%$\lambda$i:Nat.i (
+%  $\lambda$i:Nat. succ(i)
+%  {new = 1, get = $\lambda$i:Nat.i, inc = $\lambda$:Nat. succ(i)}.new
+%  )
+%$\mapsto$ 
+%$\lambda$i:Nat.i ( ($\lambda$i:Nat. succ(i)) 1 )
+%$\mapsto$ 
+%$\lambda$i:Nat.i succ(1) 
+%$\mapsto$
+%$\lambda$i:Nat.i 2
+%$\mapsto$ 
+%2
+%\end{lstlisting}
+
+\section{Featherweight Java}
+Consider the following classs definitions in Featherweight Java (TAPL chapter 19) and assume there is a class \texttt{int} of integers.
+\begin{lstlisting}
+  class List extends Object { 
+    List() { 
+      super(); 
+    } 
+
+    int head() {
+      return 0;
+    }
+
+    List tail() {
+      return new List();
+    }
+  }
+
+  class Nil extends List { Nil() { super(); } }
+
+  class Cons extends List {
+    int first;
+    List rest;
+
+    Cons(int first, List rest) {
+      super(); self.first = first; self.rest = rest;
+    }
+
+    int head(){
+      return self.first;
+    }
+
+    List tail(){
+      return self.rest;
+    }
+
+  }
+\end{lstlisting}
+
+Now consider the following list:
+\begin{lstlisting}
+  l = new Cons(1, new Cons(2, new Cons(3,new Nil())));
+\end{lstlisting}
+Find featherweight java terms that calculate the following
+\begin{itemize}
+  \item A new list with 5 elements $[4,5,1,2,3]$ extending $\mathtt{l}$ in front
+  \item A new list, containing all elements of $\mathtt{l}$ incremented by $1$. You can assume for two integers $i$ and $j$, $i+j$ is a valid term in FJ
+  \item A term that calculates the sum of all elements in $\mathtt{l}$ (do not use hard coded values $1,2,3$, only the given list).
+\end{itemize}
+\emph{Hint: You can use the variable \texttt{l} in your solution instead of copying the entire term each time you use it.
+  Your solution also does not need to handle any lists of different lengths, only the special case of $\mathtt{l}$}
+
+%\begin{lstlisting}
+%  new Cons(4, new Cons(5, l))
+%\end{lstlisting}
+%
+%\begin{lstlisting}
+%  new Cons(l.head()+1,
+%    new Cons(l.tail().head()+1, 
+%      new Cons(l.tail().tail().head()+1,
+%        new Nil())));
+%\end{lstlisting}
+%
+%\begin{lstlisting}
+%  l.head() + l.tail().head() + l.tail().tail().head()
+%\end{lstlisting}
+
+\section{TAPL}
+Read through chapters 19 and 24 of TAPL and post your questions in the dedicated forum thread.
