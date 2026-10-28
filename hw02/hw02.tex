@@ -2,17 +2,25 @@
 Consider the grammar from homework 01, with $+,-,*$ shortened to $\oplus$:
 \[
   \begin{array}{l c r r}
-    \oplus & \coloneq & + \mid - \mid * & \emph{Binary Operations}\\
-    t & \coloneq & n \mid t \oplus t  \mid \mathtt{ifz}(t;t,t) & \emph{Terms}\\
+    \oplus & \coloneq & + \mid - \mid * \mid \vee \mid \wedge & \emph{Binary Operations}\\
+    t & \coloneq & n \mid \mathtt{true} \mid \mathtt{false} \mid t \oplus t  \mid \mathtt{if}(t;t,t) & \emph{Terms}\\
   \end{array}
 \]
 We define the following operational semantics for this language
 
 \begin{align*}
-  v & \coloneq n & \emph{Values}\\
-  v_1 \oplus v_2 & \rightarrow & (v_1\oplus v_2)\\
-  \mathtt{ifz}(0;t_1,t_2) & \rightarrow &  t_1\\
-  \mathtt{ifz}(v;t_2,t_2) & \rightarrow & t_2 \text{if } n\neq 0\\
+  v & \coloneq n \mid \mathtt{true} \mid \mathtt{false} & \emph{Values}\\
+  n_1 \oplus n_2 & \rightarrow & (v_1\oplus v_2) \text{ for } \oplus \in \{+,-,*\}\\
+  \mathtt{if}(\texttt{true};t_1,t_2) & \rightarrow & t_1\\
+  \mathtt{if}(\texttt{false};t_1,t_2) & \rightarrow & t_2 \\
+  \mathtt{true} \vee \mathtt{true} & \rightarrow & \mathtt{true} \\
+  \mathtt{true} \vee \mathtt{false} & \rightarrow & \mathtt{true} \\
+  \mathtt{false} \vee \mathtt{true} & \rightarrow & \mathtt{true} \\ 
+  \mathtt{false} \vee \mathtt{false} &\rightarrow & \mathtt{false} \\ 
+  \mathtt{true} \wedge \mathtt{true} & \rightarrow & \mathtt{true}\\
+  \mathtt{true} \wedge \mathtt{false} & \rightarrow & \mathtt{false}\\
+  \mathtt{false} \wedge \mathtt{true} & \rightarrow & \mathtt{false}\\
+  \mathtt{false} \wedge \mathtt{false} & \rightarrow & \mathtt{false} 
 \end{align*}
 
 \begin{minipage}{\textwidth}
@@ -64,13 +72,15 @@ Here, $E[t]$ denotes the result of ``plugging in'' $t$ in $E$, i.e., replacing $
 
 Using the above language and the given evaluation rules, give a derivation tree for evaluating the following term by one step
 \begin{align*}
-  \mathtt{ifz}((3*4)-5;(7*7)+15,4+4)
+  \mathtt{ifz}((\mathtt{true} \vee \mathtt{false}) \wedge (\mathtt{false}\vee \mathtt{false});(7*7)+15,4+4)
 \end{align*}
 The tree should begin like this \\
 \begin{minipage}{\textwidth}
   \begin{prooftree}
     \AxiomC{\dots}
-    \UnaryInfC{$\mathtt{ifz}((3*4)-5;(7*7)+15,4+4) \mapsto \mathtt{ifz}(12-5;(7*7)+15,4+4)$}
+    \UnaryInfC{$\mathtt{ifz}((\mathtt{true} \vee \mathtt{false}) \wedge (\mathtt{false}\vee \mathtt{false});(7*7)+15,4+4)$}
+    \noLine
+    \UnaryInfC{$\mapsto \mathtt{ifz}(\mathtt{true} \wedge (\mathtt{false}\vee\mathtt{false}) ;(7*7)+15,4+4)$}
   \end{prooftree}
   \hfill
   \vspace{1em}
@@ -86,14 +96,14 @@ If you are using LaTeX for your solution, use the package ``bussproofs'' for the
 \end{itemize}
 
 \subsection*{Induction on Derivation Trees}
-Take the definition of $\mathtt{size}$ from the last homework:
+Take the definition of $\mathtt{size}$ from the last homework, expanded for the new language:
 \[
 \begin{array}{l c r}
 \mathtt{size}(n) & \coloneq&  1\\
-\mathtt{size}(t_1+t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
-\mathtt{size}(t_1-t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
-\mathtt{size}(t_1*t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
-\mathtt{size}(\mathtt{ifz(t_1;t_2,t_3)}) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2)+\mathtt{size}(t_3) + 1
+  \mathtt{size}(\mathtt{true}) & \coloneq & 1\\
+  \mathtt{size}(\mathtt{false}) & \coloneq & 1\\
+\mathtt{size}(t_1 \oplus t_2) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2) + 1\\
+\mathtt{size}(\mathtt{if(t_1;t_2,t_3)}) &\coloneq& \mathtt{size}(t_1)+\mathtt{size}(t_2)+\mathtt{size}(t_3) + 1
 \end{array}
 \]
 
