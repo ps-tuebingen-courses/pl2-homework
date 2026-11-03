@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage{bussproofs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+\section*{Task 1}
+\subsection*{Inference Rules}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.24\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \UnaryInfC{$n \in \mathcal{T}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1 \in \mathcal{T}$}
+      \AxiomC{$t_2 \in \mathcal{T}$}
+      \BinaryInfC{$t_1 + t_2 \in \mathcal{T}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1 \in \mathcal{T}$}
+      \AxiomC{$t_2 \in \mathcal{T}$}
+      \BinaryInfC{$t_1 - t_2 \in \mathcal{T}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+  \begin{minipage}{.4\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1 \in \mathcal{T}$}
+      \AxiomC{$t_2 \in \mathcal{T}$}
+      \BinaryInfC{$t_1 * t_2 \in \mathcal{T}$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.55\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1\in\mathcal{T}$}
+      \AxiomC{$t_2\in\mathcal{T}$}
+      \AxiomC{$t_3\in\mathcal{T}$}
+      \TrinaryInfC{$\mathtt{ifz}(t_1;t_2,t_3)\in\mathcal{T}$}
+    \end{prooftree}
+  \end{minipage}
+\end{minipage}
+
+
+\subsection*{Inductive Definition}
+
+The set of terms $\mathcal{T}$ is the smallest set such that 
+
+\begin{itemize}
+\item For all integers $n$, $n\in\mathcal{T}$
+\item For all terms $t_1,t_2\in\mathcal{T}$, $t_1 + t_2, t_1 - t_2, t_1 * t_2 \in \mathcal{T}$
+\item For alle terms $t_1,t_2,t_3\in\mathcal{T}, \mathtt{ifz}(t_1;t_2,t_3)\in \mathcal{T}$
+\end{itemize}
+
+\subsection*{Limit of sets $S_n$}
+
+For each natural number $i$, we define
+\begin{align*}
+S_0 & = & \emptyset \\
+S_{i+1} & = & \mathbb{Z} \\
+  & \cup & \{ t_1 + t_2 \mid t_1,t_2 \in S_i\}\\
+  & \cup & \{ t_1 - t_2 \mid t_1, t_2 \in S_i \}\\
+  & \cup & \{ t_1 * t_2 \mid t_1,t_2\in S_i\} \\
+  & \cup & \{ \mathtt{ifz}(t_1;t_2,t_3) \mid t_1,t_2,t_2 \in S_i)\}\\
+S & = & \bigcup_{i\in\mathbb{N}} S_i
+\end{align*}
+\section*{Task 2}
+
+Induction on the structure of $t\in\mathcal{T}$
+\begin{itemize}
+\item $t = n$ for some $n\in\mathbb{Z}$. Then $\mathtt{depth}(t) = 1 = size(t)$.
+\item $t = t_1 + t_2$ for $t_1, t_2\in\mathcal{T}$. Then 
+  \begin{align*}
+    \mathtt{depth}(t) & =  &\mathtt{max}\{\mathtt{depth}(t_1), \mathtt{depth}(t_2)\} + 1\\
+    & \geq & \mathtt{depth}(t_1) + \mathtt{depth}(t_2) + 1 \\
+    & \geq_{\text{IH}} & \mathtt{size}(t_1) + \mathtt{size}(t_2) + 1 \\
+    & = & \mathtt{size}(t)
+  \end{align*}
+\item $t = t_1 - t_2$ or $t = t_1 * t_2$ for $t_1, t_2\in\mathcal{T}$ is completely analogous to the above case
+\item $t = \mathtt{ifz}(t_1;t_2,t_3)$ for $t_1,t_2,t_3\in\mathcal{T}$. Then
+  \begin{align*}
+  \mathtt{depth}(t) & = & \mathtt{max}\{\mathtt{depth}(t_1),\mathtt{depth}(t_2),\mathtt{depth}(t_3)\} + 1\\
+  & \geq & \mathtt{depth}(t_1) + \mathtt{depth}(t_2) + \mathtt{depth}(t_3) + 1 \\
+  & \geq_{\text{IH}} & \mathtt{size}(t_1) + \mathtt{size}(t_2) + \mathtt{size}(t_3) \\ 
+  & = & \mathtt{size}(t)
+  \end{align*}
+\end{itemize}
+\end{document}
