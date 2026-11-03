@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{bussproofs}
+\usepackage{mathtools}
+
+\begin{document}
+\section*{Task 1}
+Congruence Rules:
+\begin{itemize}
+\item \textsc{E-OpFst}
+\item \textsc{E-OpSnd} 
+\item \textsc{E-IfCond}
+\end{itemize}
+All other rules are computation rules 
+
+\begin{align*}
+E & \coloneq & \square \\
+  && E \oplus t \\ 
+  && v \oplus E \\
+  && \mathtt{if}(E;t_1,t_2)\\
+\end{align*}
+
+\section*{Task 2}
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{E-OrTrueFalse}}
+\UnaryInfC{$\mathtt{true} \vee \mathtt{false} \mapsto \mathtt{true}$}
+\RightLabel{\textsc{E-OpFst}}
+\UnaryInfC{$(\mathtt{true}\vee\mathtt{false})\wedge (\mathtt{false}\vee\mathtt{false})\mapsto \mathtt{true} \wedge (\mathtt{false} \vee \mathtt{false})$}
+\RightLabel{\textsc{E-IfCond}}
+\UnaryInfC{$\mathtt{if}((\mathtt{true}\vee\mathtt{false})\wedge (\mathtt{false}\vee\mathtt{false});(7*7)+15,4+4)$}
+\noLine{}
+\UnaryInfC{$\mapsto \mathtt{if}(\mathtt{true}\wedge (\mathtt{false}\vee\mathtt{false});(7*7)+15,4+4)$}
+\end{prooftree}
+
+\begin{itemize}
+\item Every number $n\in\mathbb{Z}$, $\mathtt{true}$,$\mathtt{false}$ are values and normal forms
+\item $\mathtt{if}(3;1,2)$ is in normal form, but not a value,
+\item The only rules for evaluating a $\mathtt{if}$-term with the condition already a value are the rules \textsc{E-IfTrue} and \textsc{E-IfFalse}, which requires the condition to be either $\mathtt{true}$ or $\mathtt{false}$, but $3$ is neither
+\end{itemize}
+
+We claim given terms $t$ and $t^{\prime}$ with $t\mapsto t^{\prime}$, we have $size(t) \geq size(t^{\prime})$. \\
+Proof by induction on the evaluation rule used to evaluate $t\mapsto t^{\prime}$
+
+\begin{itemize}
+\item \textsc{E-Op}, then $t = n_1 \oplus n_2$ for some $n_1,n_2\in\mathbb{Z}$ and binary operation $\oplus\in\{+,-,*\}$. 
+  Then $t^{\prime} = n$ where $n\in\mathbb{Z}$ is the result of applying the given binary operation to the two numbers, and we have 
+  \begin{align*}
+    \mathtt{size}(t) = \mathtt{size}(n_1) + \mathtt{size}(n_2) + 1 = 1 + 1 + 1 \\
+    \leq 1  = \mathtt{size}(n) =\mathtt{size}(t^{\prime})
+  \end{align*}
+\item \textsc{E-IfTrue}, then $t =\mathtt{if}(\mathtt{true};t^{\prime},t_2)$ for some term $t_2$. Then we have 
+  \begin{align*}
+    \mathtt{size}(t) = \mathtt{size}(\mathtt{true}) + \mathtt{size}(t^{\prime}) + \mathtt{size}(t_2) + 1 \leq \mathtt{size}(t^{\prime})
+  \end{align*}
+\item \textsc{E-IfFalse}. This is completely analogous to \textsc{E-IfTrue} with the places of $t^{\prime}$ and $t_2$ exchanged, and $\mathtt{true}$ replaced with $\mathtt{false}$
+\item \textsc{E-OrTrueTrue}, then $t = \mathtt{true} \vee \mathtt{true}$ and $t^{\prime}$, and we have 
+  \begin{align*}
+    \mathtt{size}(t) = \mathtt{size}(\mathtt{true)} + \mathtt{size}(\mathtt{true}) + 1 \leq \mathtt{size}(\mathtt{true}) = \mathtt{size}(t^{\prime})
+  \end{align*}
+\item \textsc{E-OrTrueFalse}, \textsc{E-OrFalseTrue}, \textsc{E-OrFalseFalse}, \textsc{E-AndTrueTrue}, \textsc{E-AndTrueFalse}, \textsc{E-AndFalseTrue}, \textsc{E-AndFalseFalse} are all analogous to the \textsc{E-OrTrueTrue} case, only with $\mathtt{true}$ and $\vee$ replaced by $\mathtt{false}$ and $\wedge$ depending on the case
+\item \textsc{E-OpFst}, then $t=t_1 \oplus t_2$ and $t^{\prime} = t_1^{\prime}\oplus t_2$ for some terms $t_1,t_1^{\prime},t_2$ with $t_1\mapsto t_1^{\prime}$. By induction hypothesis, we have $\mathtt{size}(t_1)\leq \mathtt{size}(t_1^{\prime})$ and this gives us 
+  \begin{align*}
+    \mathtt{size}(t) = \mathtt{size}(t_1) + \mathtt{size}(t_2) + 1 \leq_{\text{IH}} \mathtt{size}(t_1^{\prime}) + \mathtt{size}(t_2) + 1 = \mathtt{size}(t^{\prime})
+  \end{align*}
+\item \textsc{E-OpSnd}, analogous to \textsc{E-OpFst} just with the second term instead of the first term used with the induction hypothesis 
+\item \textsc{E-IfCond}, then $t = \mathtt{if}(t_1;t_2,t_3)$ and $t^{\prime} = \mathtt{ifz}(t_1^{\prime};t_2,t_3)$ for some terms $t_1,t_1^{\prime},t_2,t_3$ with $t_1\mapsto t_1^{\prime}$. By induction hypothesis, we have $\mathtt{size}(t_1) \leq \mathtt{size}(t_1^{\prime})$ which gives 
+  \begin{align*}
+    \mathtt{size}(t) = \mathtt{size}(t_1) + \mathtt{size}(t_2) + \mathtt{size}(t_3) + 1\leq_{\text{IH}}\\
+    \mathtt{size}(t_1^{\prime} + \mathtt{size}(t_2) + \mathtt{size}(t_3) + 1 = \mathtt{size}(t^{\prime})
+  \end{align*}
+\end{itemize}
+\end{document}
