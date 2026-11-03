@@ -1,0 +1,207 @@
+\documentclass{article}
+\usepackage{bussproofs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\newcommand{\round}[1]{\ensuremath\mathtt{round}(#1)}
+\newcommand{\fl}[1]{\ensuremath\mathtt{Fl}(#1)}
+\newcommand{\nat}[1]{\ensuremath{\mathtt{Int}(#1)}}
+\newcommand{\tofloat}[1]{\ensuremath\mathtt{AsFloat}(#1)}
+\newcommand{\tyint}{\ensuremath\mathtt{Int}}
+\newcommand{\tyfloat}{\ensuremath\mathtt{Float}}
+\newcommand{\pow}[2]{\ensuremath\mathtt{pow}(#1,#2)}
+\newcommand{\listint}{\ensuremath\mathtt{List}}
+\newcommand{\cons}[2]{\ensuremath\mathtt{Cons}(#1,#2)}
+
+\begin{document}
+\section*{Task 1}
+\begin{enumerate}
+\item Cannot be typed, because $\mathtt{pow}$ requires the second argument to have type $\tyint$ (rule \textsc{Ty-Pow}), but floats always have tyoe $\tyfloat$ (rule \textsc{Ty-Float})
+\item
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{Ty-Float}}
+\UnaryInfC{$\fl{3}:\tyfloat$}
+\AxiomC{}
+\RightLabel{\textsc{Ty-Int}}
+\UnaryInfC{$\nat{4}:\tyint$}
+\RightLabel{\textsc{Ty-ToFloat}}
+\UnaryInfC{$\tofloat{\nat{4}}:\tyfloat$}
+\RightLabel{\textsc{Ty-BinOp}}
+\BinaryInfC{$\fl{3} * \tofloat{\nat{4}}:\tyfloat$}
+\RightLabel{\textsc{Ty-Round}}
+\UnaryInfC{$\round{\fl{3} * \tofloat{\nat{4}}}:\tyint$}
+\end{prooftree}
+\item
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{Ty-Int}}
+\UnaryInfC{$\nat{2}:\tyint$}
+\RightLabel{\textsc{Ty-ToFloat}}
+\UnaryInfC{$\tofloat{\nat{2}}:\tyfloat$}
+\AxiomC{}
+\RightLabel{\textsc{Ty-Int}}
+\UnaryInfC{$\nat{64}:\tyint$}
+\RightLabel{\textsc{Ty-Pow}}
+\BinaryInfC{$\pow{\tofloat{\nat{2}}}{\nat{64}}:\tyfloat$}
+\end{prooftree}
+\item Cannot be typed, since \textsc{Ty-BinOp} requires both operands to have the same type. For this to be well-typed, either the float has to be rounded, or the integer has to be cast
+\end{enumerate}
+
+\section*{Task 2}
+\subsection*{Progress}
+Let $t$ be a well-typed term with type $\tau$. By structural induction on $t$
+\begin{itemize}
+\item $t = Int(n)$ for some $n\in\mathbb{Z}$, then $t$ is a value 
+\item $t = Fl(f)$ for some $f\in\mathbb{R}$, then $t$ is a value
+\item $t = t_1 \oplus t_2$ for some terms $t_1,t_2$. By \textsc{Ty-BinOp}, both $t_1$ and $t_2$ are well-typed with type $\tau$ (using inversion).Then we have four cases 
+\begin{enumerate}
+\item $\tau=\tyint$ and both $t_1$ and $t_2$ are values. Then (by inversion) $t_1 = \nat{n_1}$ and $t_2 = \nat{n_2}$ for some $n_1,n_2\in\mathbb{Z}$. Then by \textsc{E-IntOp}, $t\mapsto Int(n_1 \oplus n_2)$
+\item $\tau=\tyfloat$ and both $t_1$ and $t_2$ are values. Then (by inversion) $t_1 = \fl{f_1}$ and $t_2=\fl{f_2}$  for some $f_1,f_2\in\mathbb{R}$. Then by \textsc{E-FlOp}, we have $t\mapsto \fl{f_1\oplus f_2}$.
+\item $t_1$ is not a value. Then by induction hypothesis, there exists some $t_1^{\prime}$ with $t_1\mapsto t_1^{\prime}$. Then by \textsc{E-BinOp1} we have $t\mapsto t_1^{\prime} \oplus t_2$
+\item $t_1$ is a value, but $t_2$ is not. Then by induction hypothesis, there exists some $t_2^{\prime}$ with $t_2\mapsto t_2^{\prime}$. Then by \textsc{E-BinOp2}, we have $t\mapsto t_1 \oplus t_2^{\prime}$
+\end{enumerate}
+\item $t = \round{t^{\prime}}$, then by \textsc{Ty-Round} (and inversion), $t^{\prime}$ is well-typed with type $\tyfloat$ and we have two cases 
+\begin{enumerate}
+\item $t^{\prime}$ is a value, then (by inversion), $t^{\prime} = \fl{f}$ for some $f\in\mathbb{R}$, and by $\textsc{E-RoundFl}$, we have $t\mapsto \nat{\lfloor f \rceil}$
+\item $t^{\prime}$ is not a value. Then by induction hypothesis, there is some $t^{\prime\prime}$ with $t^{\prime} \mapsto t^{\prime\prime}$, and by \textsc{E-Round} we have $t\mapsto \round{t^{\prime\prime}}$
+\end{enumerate}
+\item $t = \tofloat{t^{\prime}}$, then by \textsc{Ty-ToFloat}, $t^{\prime}$ is well-typed with type $\tyint$, and we again have two cases 
+\begin{enumerate}
+\item $t^{\prime}$ is a value, then (by inversion), $t^{\prime} = \nat{n}$ for some $n\in\mathbb{Z}$ and we have $t\mapsto \fl{n}$
+\item $t^{\prime}$ is not a value, then by induction hypothesis, there exists some $t^{\prime\prime}$ such that $t^{\prime} \mapsto t^{\prime\prime}$. Then by \textsc{E-AsFloat}, we have $t\mapsto \tofloat{t^{\prime\prime}}$
+\end{enumerate}
+\item $t = \pow{t_1}{t_2}$, then both $t_1$ and $t_2$ are well-typed by \textsc{Ty-Pow} (and inversion) with $t_1:\tau$ and $t_2:\tyint$, and we have four cases 
+\begin{enumerate}
+\item $\tau=\tyint$ and both $t_1$ and $t_2$ are values, then $t_1=\nat{n_1}$ and $t_2=\nat{n_2}$ with $n_1,n_2\in\mathbb{Z}$, and by \textsc{E-PowInt} we have $t\mapsto \fl{n_1^{n_2}}$
+\item $\tau=\tyfloat$ and both $t_1$ and $t_2$ are values, then $t_1 = \nat{n}$ and $t_2=\fl{f}$ with $n\in\mathbb{Z}$ and $f\in\mathbb{R}$, and by \textsc{E-PowFl} we have $t\mapsto \fl{f^n}$
+\item $t_1$ is not a value, then by induction hypothesis, there is some $t_1^{\prime}$ with $t_1\mapsto t_1^{\prime}$, and by \textsc{E-Pow1} we have $t\mapsto \pow{t_1^{\prime}}{t_2}$
+\item $t_1$ is a value, but $t_2$ is not a value, then by induction hypothesis, there is some $t_2^{\prime}$ with $t_2\mapsto t_2^{\prime}$, and by \textsc{E-Pow2} we have $t\mapsto \pow{t_1}{t_2^{\prime}}$
+\end{enumerate}
+\end{itemize}
+
+\subsection*{Preservation}
+Let $t_1,t_2$ be terms with $t_1\mapsto t_2$ and such that $t_1$ is well-typed with type $\tau$. By induction on the evaluation rule used to evaluate $t_1$ we have 
+\begin{itemize}
+\item \textsc{E-FlOp}, then $t_1 = \fl{f_1} \oplus \fl{f_2}$ and $t_2 = \fl{f_1\oplus f_2}$ for some $f_1,f_2\in\mathbb{R}$. Then by \textsc{Ty-Fl}, we have $t_2:\tyfloat$
+\item \textsc{E-IntOp}, then $t_1 = \nat{n_1} \oplus \nat{n_2}$ and $t_2 = \nat{n_1\oplus n_2}$ for some $n_1,n_2\in\mathbb{Z}$. Then by \textsc{Ty-Int}, we have $t_2:\tyint$
+\item \textsc{E-RoundFl}, then $t_1 = \round{\fl{f}}$ and $t_2=\nat{\lfloor f \rceil}$ for some $f\in\mathbb{R}$. Then by \textsc{Ty-Int}, we have $t_2:\tyint$
+\item \textsc{E-IntFl}, then $t_1 = \tofloat{\nat{n}}$ for some $n\in\mathbb{Z}$ and $t_2 = \fl{n}$, and by \textsc{Ty-Fl} , we have $t_2:\tyfloat$
+\item \textsc{PowFl}, then $t_1 = \pow{\fl{f}}{\nat{n}}$  for some $f\in\mathbb{R}$ and $n\in\mathbb{Z}$, and $t_2=\fl{f^n}$, so by \textsc{Ty-Fl}, $t_2:\tyfloat$
+\item \textsc{PowInt}, then $t_1 = \pow{\nat{n_1}}{\nat{n_2}}$ for some $n_1,n_2\in\mathbb{Z}$ and $t_2=\fl{n_1^{n_2}}$ so by \textsc{Ty-Fl}, $t_2:\tyfloat$
+\item \textsc{E-BinOp1}, then $t_1 = t_3 \oplus t_4$ and $t_2 = t_3^{\prime} \oplus t_4$ with $t_3 \mapsto t_3^{\prime}$. By \textsc{Ty-BinOp}, we have $t_3:\tau$,$t_4:\tau$ and thus by induction hypothesis $t_3^{\prime}:\tau$. Then we can apply \textsc{Ty-BinOp} to $t_2$ and get $t_2:\tau$
+\item \textsc{E-BinOp2}, analogous to \textsc{E-BinOp1} with the roles of $t_3$ and $t_4$ exchanged
+\item \textsc{E-Round}, then $t_1 = \round{t_3}$ and $t_2 = \round{t_3^{\prime}}$ for some $t_3,t_3^{\prime}$ with $t_3 \mapsto t_3^{\prime}$. Then by \textsc{Ty-Round}, we have $t_3:\tyfloat$ and by induction hypothesis $t_3^{\prime}:\tyfloat$, and we can apply \textsc{Ty-Round} again to get $t_2:\tyint$
+\item \textsc{E-AsFloat}, then $t_1 = \tofloat{t_3}$ and $t_2 = \tofloat{t_3}^{\prime}$ for some $t_3,t_3^{\prime}$ with $t_3 \mapsto t_3$. By \textsc{Ty-AsFloat}, we have $t_3:\tyint$, so by induction hypothesis $t_3^{\prime}:\tyint$ and applying \textsc{Ty-Round} again, $t_2:\tyfloat$
+\item \textsc{E-Pow1}, then $t_1 = \pow{t_3}{t_4}$ and $t_2 = \pow{t_3^{\prime}}{t_4}$ for some terms $t_3,t_3^{\prime},t_4$ with $t_3 \mapsto t_3^{\prime}$. Then by \textsc{Ty-Pow}, $t_3:\tau$,$t_4:\tyint$ and by induction hypothesis $t_3^{\prime}:\tau$. Applying \textsc{Ty-Pow} to $t_2$ we get $t_2:\tyfloat$
+\item \textsc{E-Pow2}, analogous to \textsc{E-Pow1} but with $t_3$ and $t_4$ exchanged.
+\end{itemize}
+
+\section*{Task 3}
+
+\begin{enumerate}
+\item
+\begin{align*}
+\tau & \coloneq & \tyint \mid \listint 
+\end{align*}
+
+\item
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\textsc{Ty-Int}}
+      \UnaryInfC{$n:\tyint$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{\textsc{Ty-Nil}}
+      \UnaryInfC{$\mathtt{Nil}:\listint$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1:\tyint$}
+      \AxiomC{$t_2:\listint$}
+      \RightLabel{\textsc{Ty-Cons}}
+      \BinaryInfC{$\cons{t_1}{t_2}:\listint$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+\end{minipage}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\listint$}
+      \RightLabel{\textsc{Ty-Tail}}
+      \UnaryInfC{$\mathtt{tail}(t):\listint$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\tyint$}
+      \RightLabel{\textsc{Ty-Succ}}
+      \UnaryInfC{$\mathtt{succ}(t):\tyint$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t:\tyint$}
+      \RightLabel{\textsc{Ty-Pred}}
+      \UnaryInfC{$\mathtt{pred}(t):\tyint$}
+    \end{prooftree}
+  \end{minipage}
+\end{minipage}
+\item 
+\begin{itemize}
+\item Progress\\
+  Let $t$ be a term that is well-typed with type $\tau$. By induction on the typing rule used to type $t$
+\begin{itemize}
+\item \textsc{Ty-Int}, then $t=n$ for some $n\in\mathbb{Z}$, which is a value
+\item \textsc{Ty-Nil}, then $t=\mathtt{Nil}$ and thus a value
+\item \textsc{Ty-Cons}, then $t=\cons{t_1}{t_2}$ for some terms $t_1,t_2$. Because $t$ is well-typed, we know $t_1$ and $t_2$ are also well-typed with types $\tyint$ and $\listint$, respectively. Then we have three cases 
+\begin{enumerate}
+\item Both $t_1$ and $t_2$ are values. In this case $\cons{t_1}{t_2}$ is also a value, because the only values of type $\tyint$ are integer literals and all values of type $\listint$ are list values (without proof).
+\item $t_1$ is not a value, then by induction hypothesis, we have some $t_1^{\prime}$ with $t_1\mapsto t_1^{\prime}$, and by \textsc{E-Cons1}, $t\mapsto \cons{t_1^{\prime}}{t_2}$
+\item $t_1$ is a value and $t_2$ is not, then there is some $t_2^{\prime}$ with $t_2\mapsto t_2^{\prime}$. In this case, by \textsc{E-Cons2}, we have $t\mapsto \cons{t_1}{t_2^{\prime}}$
+\end{enumerate}
+\item \textsc{Ty-Tail}, then $t=\mathtt{tail}(t_1)$ with $t_1:\tau=\listint$. Then we again have two cases
+  \begin{enumerate}
+    \item If $t_1$ is a value, either $t_1=\mathtt{nil}$ or $t_1=\cons{v_2}{v_3}$ for some values $v_2:\tyint,v_3:\listint$. Then $t\mapsto v_3$
+    \item If $t_1$ is not a value, by induction hypothesis $t_1\mapsto t_1^{\prime}$ for some term $t_1^{\prime}$ and by \textsc{E-Tail}, $t\mapsto \mathtt{tail}(t_1^{\prime})$
+  \end{enumerate}
+\item \textsc{Ty-Succ}, then $t=\mathtt{succ}(t_1)$ for some term $t_1:\tyint$. If $t_1$ is a value, it has to be a number $n\in\mathtt{Z}$ and $t\mapsto n+1$. Otherwise, by induction hypothesis $t_1\mapsto t_1^{\prime}$ for some term $t_1^{\prime}$, and by \textsc{E-Succ}, $t\mapsto \mathtt{succ}(t_1^{\prime}$.
+\item \textsc{Ty-Pred}, analogous to \textsc{Ty-Succ}, but with $+1$ replaced by $-1$
+\end{itemize}
+\item Preservation\\
+  Let $t_1$ be a well-typed term with type $\tau$ and $t_2$ another term such that $t_1\mapsto t_2$. Then by induction on the last used evaluation rule
+    \begin{itemize}
+      \item \textsc{E-TailCons}, then $t_1=\mathtt{tail}(\cons{t_3}{t_4})$ and $t_2=t_4$, for some terms $t_3,t_4$. By \textsc{Ty-Tail}, we have $t_4:\listint$
+      \item \textsc{E-TailNil}, then $t_1=\mathtt{tail}(\mathtt{Nil})$ and $t_2=\mathtt{Nil}$, which, by \textsc{Ty-Nil} is well-typed with type $\listint$
+      \item \textsc{E-SuccN}, then $t_1 = \mathtt{succ}(n)$ for $n\in\mathbb{Z}$ and $t_2=n+1$, which by \textsc{Ty-Int} has type $\tyint$
+      \item \textsc{E-PredN}, then  $t_1= \mathtt{pred}(n)$ for $n\in\mathbb{Z}$ and $t_2=n-1$, which by \textsc{Ty-Int} has type $\tyint$
+      \item \textsc{E-Cons1}, then $t_1 = \cons{t_3}{t_4}$ and $t_2=\cons{t_3^{\prime}}{t_4}$ for some terms $t_3,t_4,t_3^{\prime}$ with $t_3 \mapsto t_3^{\prime}$. By \textsc{Ty-Cons}, $t_3:\tyint$,$t_4:\listint$ and thus by induction hypothesis $t_3^{\prime}:\tyint$, and we can apply \textsc{Ty-Cons} again to get $t_2:\listint$
+      \item \textsc{E-Cons2}, then $t_1 = \cons{t_3}{t_4}$ and $t_2=\cons{t_3}{t_4^{\prime}}$ for some terms $t_3,t_4,t_3^{\prime}$ with $t_3 \mapsto t_3^{\prime}$. By \textsc{Ty-Cons}, $t_3:\tyint$, $t_4:\listint$ and thus by induction hypothesis, $t_4^{\prime}:\listint$, so we can again apply \textsc{Ty-Cons} to get $t_2:\listint$
+      \item \textsc{E-Tail}, then $t_1 = \mathtt{tail}(t_3)$ and $t_2=\mathtt{tail}(t_3^{\prime})$ for some terms $t_3,t_3^{\prime}$ with $t_3\mapsto t_3^{\prime}$. By \textsc{Ty-Tail}, we have $t_3:\listint$, so by induction hypothesis $t_3^{\prime}:\listint$ and thus again by \textsc{Ty-Tail}, $t_2:\listint$.
+      \item \textsc{E-Succ}, then $t_1 = \mathtt{succ}(t_3)$ and $t_2=\mathtt{succ}(t_3^{\prime})$ for some terms $t_3,t_3^{\prime}$ with $t_3\mapsto t_3^{\prime}$. By \textsc{Ty-Succ}, we have $t_3:\tyint$ and thus by induction hypothesis $t_3^{\prime}:\tyint$ and applying \textsc{Ty-Succ} again, $t_3:\tyint$
+      \item \textsc{E-Pred}, then $t_1= \mathtt{pred}(t_3)$ and $t_2=\mathtt{pred}(t_3^{\prime})$ for some terms $t_3,t_3^{\prime}$ with $t_3\mapsto t_3^{\prime}$. By \textsc{Ty-Pred}, $t_3:\tyint$, so by induction hypothesis $t_3^{\prime}:\tyint$, and applying \textsc{Ty-Pred}, $t_2:\tyint$.
+    \end{itemize}
+\end{itemize}
+\end{enumerate}
+
+\section*{Task 5}
+
+\begin{enumerate}
+  \item $\lambda.\lambda.1\ 0$
+  \item $\lambda.0\ (\lambda.\lambda.1)$
+  \item $\lambda (\lambda.1)\ (\lambda.0)$
+\end{enumerate}
+\end{document}

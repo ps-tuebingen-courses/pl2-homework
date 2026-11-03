@@ -1,4 +1,4 @@
-\section{Typing}
+\section*{Task 1: Typing}
 Consider the following programming language of integers and floating point numbers 
 \[
   \begin{array}{lcrr}
@@ -46,7 +46,7 @@ To this language we add the following type system:
     \begin{prooftree}
       \AxiomC{\quad}
       \RightLabel{\textsc{Ty-Float}}
-      \UnaryInfC{$\mathtt{Fl}(n) : \mathtt{Fl}$}
+      \UnaryInfC{$\mathtt{Fl}(f) : \mathtt{Fl}$}
     \end{prooftree}
   \end{minipage}
   \hfill
@@ -111,7 +111,7 @@ Here is an example tree for the term $((\mathtt{AsFloat}(\mathtt{Int}(4))*\matht
   \end{prooftree}
 \end{minipage}
 
-\section{Progress and Preservation}
+\section*{Task 2: Progress and Preservation}
 Given the language above, we extend it with the following operational semantics:
 \[
   \begin{array}{lcrr}
@@ -193,7 +193,7 @@ Optionally, you can also prove both theorems.
   Then either $t_1$ is a value, or there is some $t_2$ such that $t_1\mapsto t_2$.
 \end{theorem}
 
-\section{Designing a type system}
+\section*{Task 3: Designing a type system}
 Take the following syntax for terms and values, where $n$ are integers with operational semantics below
 \[
   \begin{array}{lcrr}
@@ -210,10 +210,10 @@ Take the following syntax for terms and values, where $n$ are integers with oper
   \end{array}
 \]
 \begin{align*}
-  \mathtt{tail}(\mathtt{Cons}(n,lv)) & \mapsto lv\\
-  \mathtt{tail}(\mathtt{Nil}) & \mapsto \mathtt{Nil}\\
-  \mathtt{succ}(n) & \mapsto n+1\\
-  \mathtt{pred}(n) & \mapsto n-1\\ 
+  \mathtt{tail}(\mathtt{Cons}(n,lv)) & \mapsto lv & \textsc{E-TailCons}\\
+  \mathtt{tail}(\mathtt{Nil}) & \mapsto \mathtt{Nil} & \textsc{E-TailNil}\\
+  \mathtt{succ}(n) & \mapsto n+1 & \textsc{E-SuccN}\\
+  \mathtt{pred}(n) & \mapsto n-1 & \textsc{E-PredN}\\ 
 \end{align*}
 \begin{minipage}{\textwidth}
   \begin{minipage}{0.45\textwidth}
@@ -265,10 +265,10 @@ Design a type system for this language using the following steps
   \item Show \emph{Progress} and \emph{Preservation} for the type system you designed
 \end{enumerate}
 
-\section{Types and Programming Languages}
+\section*{Task 4: Types and Programming Languages}
 Read through chapter 7 of ``Types and Programming Languages'' and optionally also chapter 6 and post your questions in the dedicated forum thrad.
 
-\section{Optional: Nameless Representations}
+\section*{Task 5 (Optional): Nameless Representations}
 Transform the following terms into the nameless representation introduced in chapter 6 of types and programming languages 
 \begin{enumerate}
   \item $\lambda\ x. \lambda y. x\ y$

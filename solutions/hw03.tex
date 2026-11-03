@@ -27,7 +27,7 @@
 
 \section*{Task 2}
 \begin{align*}
-  \mathtt{sum_leaves} & \coloneq & \lambda t.\mathtt{fold}\ (\lambda v.\lambda l.\lambda r. \mathtt{plus}\ l\ r)\ (\lambda v.v)\ t\\ 
+  \mathtt{sum\_leaves} & \coloneq & \lambda t.\mathtt{fold}\ (\lambda v.\lambda l.\lambda r. \mathtt{plus}\ l\ r)\ (\lambda v.v)\ t\\ 
   \mathtt{map} & \coloneq & \lambda f.\lambda t.\mathtt{fold}\ (\lambda v.\lambda l.\lambda r.\mathtt{node}\ v\ l\ r)\ (\lambda v.\mathtt{leaf}\ (f\ v))\ t\\
   \mathtt{size} & \coloneq & \lambda t. \mathtt{fold}\ (\lambda v.\lambda l.\lambda r. \mathtt{plus}\ c_1\ (\mathtt{plus}\ l\ r))\ (\lambda v.c_1)\ t\\
 \end{align*}
