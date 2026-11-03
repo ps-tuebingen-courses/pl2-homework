@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{bussproofs}
+\begin{document}
+\section*{Task 1}
+\begin{enumerate}
+\item 
+  \begin{align*}
+    (\lambda x.\lambda y.y) (\lambda a.a\ a) & \mapsto\\
+    (\lambda y.y)[x\mapsto \lambda a.a\ a] & \mapsto \\
+    \lambda y.y
+  \end{align*}
+
+\item 
+  \begin{align*}
+    ((\lambda x.\lambda y.x\ y)\ (\lambda z.\lambda w.w))\ (\lambda a.a\ a) & \mapsto \\
+    ((\lambda y.x\ y)[x \mapsto (\lambda z.\lambda w.w)])\ (\lambda a.a\ a) & \mapsto \\ 
+    (\lambda y. (\lambda z.\lambda w.w)\ y)\ (\lambda a.a\ a) & \mapsto \\ 
+    ((\lambda z.\lambda w.w)\ y)[y \mapsto (\lambda a.a\ a)]& \mapsto \\
+    (\lambda z.\lambda w.w)\ (\lambda a.a\ a) & \mapsto \\
+    (\lambda w.w)[z \mapsto (\lambda a.a\ a)] & \mapsto\\
+    \lambda w.w
+  \end{align*}
+\end{enumerate}
+
+\section*{Task 2}
+\begin{align*}
+  \mathtt{sum_leaves} & \coloneq & \lambda t.\mathtt{fold}\ (\lambda v.\lambda l.\lambda r. \mathtt{plus}\ l\ r)\ (\lambda v.v)\ t\\ 
+  \mathtt{map} & \coloneq & \lambda f.\lambda t.\mathtt{fold}\ (\lambda v.\lambda l.\lambda r.\mathtt{node}\ v\ l\ r)\ (\lambda v.\mathtt{leaf}\ (f\ v))\ t\\
+  \mathtt{size} & \coloneq & \lambda t. \mathtt{fold}\ (\lambda v.\lambda l.\lambda r. \mathtt{plus}\ c_1\ (\mathtt{plus}\ l\ r))\ (\lambda v.c_1)\ t\\
+\end{align*}
+
+\section*{Task 3}
+\begin{minipage}{\textwidth}
+  \begin{minipage}{0.45\textwidth}
+    \begin{prooftree}
+      \AxiomC{$t_1 \mapsto t_1^{\prime}$}
+      \UnaryInfC{$t_1\ t_2 \mapsto t_1^{\prime}\ t_2$}
+    \end{prooftree}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    $(\lambda x.t_1)\ t_2 \mapsto t_1[x \mapsto t_2]$
+  \end{minipage}
+\end{minipage}
+
+\subsection*{CBV}
+\begin{align*}
+  ((\lambda f.\lambda v.v\ v)\ ((\lambda x.x)\ (\lambda y.\lambda z.y)))\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\ 
+  ((\lambda f.\lambda v.v\ v)\ (\lambda y.\lambda z.y))\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto\\
+  (\lambda v.v\ v)\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\ 
+  (\lambda v.v\ v)\ ((\lambda y.y)\ (\lambda y.y)) & \mapsto \\
+  (\lambda v.v\ v)\ (\lambda y.y) & \mapsto\\
+  (\lambda y.y)\ (\lambda y.y) & \mapsto \\
+  \lambda y.y
+\end{align*}
+
+\subsection*{CBN}
+\begin{align*}
+  ((\lambda f.\lambda v.v\ v)\ ((\lambda x.x)\ (\lambda y.\lambda z.y)))\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\ 
+  (\lambda v.v\ v)\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\
+  ((\lambda a.a\ a)\ (\lambda y.y))\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\ 
+  ((\lambda y.y)\ (\lambda y.y))\ ((\lambda a.a\ a)\ (\lambda y.y))& \mapsto \\
+  (\lambda y.y)\ ((\lambda a.a\ a)\ (\lambda y.y)) & \mapsto \\
+  (\lambda a.a\ a)\ (\lambda y.y) & \mapsto\\ 
+  (\lambda y.y)\ (\lambda y.y) & \mapsto \\
+  \lambda y.y
+\end{align*}
+
+Call-by-name might evaluate arguments multiple times, if they are used multiple times in the body, but not at all if they are not used in the body.
+Call-by-value always evaluates each argument to a function exactly once. 
+This is especially important when considering languages with side effects.
+\end{document}

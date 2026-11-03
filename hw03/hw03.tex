@@ -51,7 +51,7 @@ The basic tree functions look like this:
 
 Write the following functions, operating on trees:
 \begin{enumerate}
-  \item $\mathtt{sum_leaves}$: sums the values in the \emph{leaves}.
+  \item $\mathtt{sum\_leaves}$: sums the values in the \emph{leaves}.
   \item $\mathtt{map}$: given a function $f$, returns a tree with the same structure but $f$ applied to the value in every inner node and leaf.
   \item $\mathtt{size}$: returns the number of nodes
 \end{enumerate}
@@ -76,7 +76,7 @@ For call-by-name (CBN), we want to apply a function \emph{before} evaluating the
 \end{itemize}
 
 \begin{align*}
-    (\lambda\ f.\lambda\ v.v\ v)\ ((\lambda\ x.x)\ (\lambda\ y.\lambda\ z.y))\ ((\lambda\ a.a\ a)\ (\lambda\ y.y))
+  ((\lambda f.\lambda v.v\ v)\ ((\lambda x.x)\ (\lambda y.\lambda z.y)))\ ((\lambda a.a\ a)\ (\lambda y.y)) 
 \end{align*}
 %% λ mapM_ print $ steps cbn ex1 -- 7 steps
 %% (((\f. (\v. (v v))) ((\x. x) (\y. (\z. y)))) ((\a. (a a)) (\y. y)))
