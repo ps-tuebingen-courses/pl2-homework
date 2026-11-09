@@ -10,7 +10,7 @@ For which of the following terms $t$ does a context $\Gamma$ and a type $T$ exis
 such that they are well typed (i.e., $\Gamma\vdash t : T$)?
 If they exist, please write down \(\Gamma\) and \(T\). If not, a short note is enough.
 \begin{itemize}
-  \item $\lambda{x:\mathtt{B}}.\lambda{y:\mathtt{C}}.(\lambda{z:\mathtt{A}.z})~(w~x~y)$
+  \item $\lambda{x:\mathtt{B}}.\lambda{y:\mathtt{C}}.((\lambda{z:\mathtt{A}.z})~(w~x~y))$
   \item $\lambda{y:\mathtt{A}}.x~x$
 \end{itemize}
 
@@ -145,7 +145,7 @@ To the STLC given in TAPL (without booleans (fig. 9.1)), we add the following sy
       x[s/x] & \coloneq & s\\
       y[s/x] & \coloneq & y & \text{ if } x\neq y\\
       (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T. t_1[s/x] & \text{ if } y\neq x\\
-      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T.t_1 & \text{ if } y=x \text{ of } y\in FV(s)\\
+      (\lambda y:T.t_1)[s/x] & \coloneq & \lambda y:T.t_1 & \text{ if } y=x \text{ or } y\in FV(s)\\
       (t_1\ t_2)[s/x] & \coloneq & t_1[s/x]\ t_2[s/x]\\
       \mathtt{zero}[s/x] & \coloneq & \mathtt{zero}\\
       (\mathtt{succ}\ t)[s/x] & \coloneq & \mathtt{succ}\ t[s/x]
@@ -154,10 +154,12 @@ To the STLC given in TAPL (without booleans (fig. 9.1)), we add the following sy
   \hfill \vspace{1em}
 \end{minipage}
 Note that we use the notation $t[s/x]$ instead of $[x\mapsto s]t$ used in the book.\\
-Extend the following proofs form Tapl to this extended language
+Extend the following proofs form Tapl to this extended language. 
+You may assume the convention from the book for your proofs: 
+Terms that differ only in the names of bound variables are interchangeable in all contexts. 
 
 \begin{theorem}\emph{Preservation of Types under Substitution (9.3.8)}\\
-  If $\Gamma, x:S\vdash t:T$ and $\Gamma \vdash s:S$, then $\Gamma t[s/x]:T$.
+  If $\Gamma, x:S\vdash t:T$ and $\Gamma \vdash s:S$, then $\Gamma \vdash t[s/x]:T$.
 \end{theorem}
 \begin{theorem}\emph{Progress (9.3.5)}\\
   Let $t$ be a closed, well-typed term, that is $\vdash t:T$ for some $T$, then either $t$ is a value or there is some $t^{\prime}$ with $t\mapsto t^{\prime}$
@@ -269,14 +271,14 @@ that translates terms of the extended calculus to pure untyped lambda calculus:
   \llbracket \lambda x:T . t \rrbracket &\coloneq& \lambda x. \llbracket t \rrbracket \\
   \llbracket \mathtt{true}\rrbracket &\coloneq& \lambda{x}.\lambda{y}.x \\
   \llbracket \mathtt{false}\rrbracket &\coloneq& \lambda{x}.\lambda{y}.y \\
-  \llbracket \mathtt{if}~t_1~\mathtt{then}~t_2~\mathtt{else}~t_3 \rrbracket &\coloneq& (\llbracket t_1 \rrbracket~(\lambda{x}.\llbracket t_2 \rrbracket)~(\lambda{x}.\llbracket t_3 \rrbracket))~(\lambda{y}.y)
+  \llbracket \mathtt{if}~t_1~\mathtt{then}~t_2~\mathtt{else}~t_3 \rrbracket &\coloneq& \lambda b.\lambda x.\lambda y.(b\ x\ y)
 \end{align*}
 \emph{(In Latex, $\llbracket$ and $\rrbracket$ are written as \textbackslash llbracket and \textbackslash rrbracket. 
 This might require you to import and/or install the stmaryrd package)}
 
 \begin{itemize}
   \item Prove: $\llbracket v \rrbracket$ is a value.
-  \item Prove: If $t \mapsto^* v$ in the calculus above, then $\llbracket t\rrbracket \mapsto \llbracket v\rrbracket$
+  \item Prove: If $t \mapsto v$ in the calculus above, then $\llbracket t\rrbracket \mapsto^* \llbracket v\rrbracket$
       in the untyped call-by-value lambda calculus.
 \end{itemize}
 Here, $\mapsto^*$ refers to multi-step evaluation.

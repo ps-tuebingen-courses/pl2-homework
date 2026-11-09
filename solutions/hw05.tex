@@ -1,0 +1,178 @@
+\documentclass{article}
+
+\usepackage{bussproofs}
+\usepackage{stmaryrd}
+
+
+\newcommand{\subst}[3]{\ensuremath #1[#2/#3]}
+\newcommand{\cond}[3]{\ensuremath \mathtt{if}\ #1\ \mathtt{then}\ #2\ \mathtt{else}\ #3}
+
+\begin{document}
+\section*{Task 1}
+\begin{prooftree}
+  \AxiomC{$x:A \in y:A,x:A$}
+  \UnaryInfC{$y:A,x:A\vdash x:A$}
+  \UnaryInfC{$y:A\vdash \lambda x:A.x: A \rightarrow A$}
+  \AxiomC{$y:A \in y:A$}
+  \UnaryInfC{$y:A \vdash y:A$}
+  \BinaryInfC{$y:A \vdash (\lambda x:A.x)\ y:A$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$y:C \in w:A,z:B,z:B,y:C$}
+  \UnaryInfC{$w:A,z:B,x:B,y:C \vdash y:C$}
+  \UnaryInfC{$z:B,x:B,y:C \vdash \lambda w:A.y: A \rightarrow C$}
+  \UnaryInfC{$x:B,y:C \vdash \lambda z:B.\lambda w:A.y : B \rightarrow A \rightarrow C$}
+  \AxiomC{$x:B \in x:B,y:C$}
+  \UnaryInfC{$x:B,y:C \vdash x:B$}
+  \BinaryInfC{$x:B,y:C \vdash (\lambda z:B.\lambda w:A.y)\ x : A \rightarrow C$}
+\end{prooftree}
+
+\begin{itemize}
+  \item $\Gamma = w:B\rightarrow C \rightarrow A$, $T=B\rightarrow C \rightarrow A$
+  \begin{prooftree}
+    \AxiomC{$z:A \in \Gamma, x:B,y:C,z:A$}
+    \UnaryInfC{$\Gamma, x:B,y:C,z:A \vdash z:A$}
+    \UnaryInfC{$\Gamma, x:B,y:C \vdash \lambda z:A.z: A \rightarrow A $}
+    \AxiomC{$\vdots$}
+    \UnaryInfC{$\Gamma, x:B,y:C \vdash w\ x\ y: A$}
+    \BinaryInfC{$\Gamma, x:B,y:C \vdash (\lambda z:A.z)\ (w\ x\ y):A$}
+    \UnaryInfC{$\Gamma, x:B \vdash \lambda y:C.((\lambda z:A.z)\ (w\ x\ y)): C \rightarrow A$}
+    \UnaryInfC{$\Gamma \vdash \lambda x:B.\lambda y:C.((\lambda z:A.z)\ (w\ x\ y): B \rightarrow C \rightarrow A$}
+  \end{prooftree}
+
+  \begin{prooftree}
+    \AxiomC{$y:C \in \Gamma,x:B,y:C$}
+    \UnaryInfC{$\Gamma,x:B,y:C \vdash y:C$}
+    \AxiomC{$x:B \in \Gamma,x:B,y:C$}
+    \UnaryInfC{$\Gamma,x:B,y:C\vdash x:B$}
+    \AxiomC{$w:B\rightarrow C \rightarrow A \in \Gamma$}
+    \UnaryInfC{$\Gamma, x:B,y:C \vdash w: B \rightarrow C \rightarrow A$}
+    \BinaryInfC{$\Gamma,x:B,y:C \vdash w\ x: C \rightarrow A$}
+    \BinaryInfC{$\Gamma,x:B,y:C \vdash w\ x\ y:A$}
+  \end{prooftree}
+
+  \item Assuming there is some context $\Gamma$ and type $T$ such that $\Gamma \vdash (\lambda y:A.x\ x):T$ is derivable, 
+  by the typing rule for abstractions, we need $\Gamma,y:A \vdash x\ x: A \rightarrow T$.
+  Applying the rule for applications then gives $\Gamma,y:A\vdash x:\tau \rightarrow A \rightarrow T$ 
+  and $\Gamma,y:A\vdash x:\tau$ for some type $\tau$. 
+  Both of these are conditions on a free variable $x$, so we need $x:\tau\in\Gamma$ 
+  and $x:\tau \rightarrow A \rightarrow T\in \Gamma$.
+  If $\Gamma$ is a well-formed context, this means we need $\tau = \tau \rightarrow A \rightarrow T$.
+  This type cannot exist in the usual grammar unless we add some kind of recursive type.
+  In particular, this also means fixed-point combinators such as omega cannot be typed in stlc.
+\end{itemize}
+
+\section*{Task 2}
+
+\subsection*{Preservation of Types under Substitution}
+Let $t$ and $t^{\prime}$ be terms and $x$ a variable such that there is some environment $\Gamma$ and types $T,S$ 
+with $\Gamma,x:S\vdash t:T$ and $\Gamma\vdash t^{\prime}:S$. 
+By structural induction on $t$:
+\begin{itemize}
+\item $t=y$, then if $x\neq y$, we have $\subst{t}{t^{\prime}}{x} = t$, so clearly $\Gamma\vdash \subst{t}{t^{\prime}}{x}:T$. If $x=y$, then $\subst{t}{t^{\prime}}{x} = t^{\prime}$, and assuming a well-formed context, since $\Gamma x:S\vdash x:T$, we have $S=T$ and $\Gamma\vdash \subst{t}{t^{\prime}}{x}:T$ by assumption
+\item $t=\lambda y:\tau.t_1$, then we assume $y\neq x$ and $y\neq FV(t^{\prime})$, so by the typing rule for abstractions we have $\Gamma,y:\tau,x:S\vdash t_1:T_1$ where $T = \tau \rightarrow T_1$.
+Then by induction hypothesis, $\Gamma \vdash \subst{t_1}{t^{\prime}}{x}: T_1$, and we can apply the typing rule for abstractions again to get $\Gamma\vdash \lambda y:\tau. \subst{t_1}{t^{\prime}}{x}:\tau \rightarrow T_1$ and are done 
+\item $t = t_1\ t_2$, then by the typing rule for applications, since we have $\Gamma,x:S\vdash t:T$, we get $\Gamma,x:S\vdash t_1: T_1 \rightarrow T$ and $\Gamma,x:S\vdash t_2:T_1$ for some type $T_1$. 
+Applying the induction hypothesis, this becomes $\Gamma\vdash \subst{t_1}{t^{\prime}}{x}:T_1\rightarrow T$ and $\Gamma\vdash \subst{t_1}{t^{\prime}}{x}:T_1$.
+Then we can again apply the typing rule for applications to get $\Gamma \vdash \subst{t}{t^{\prime}}{x} = \subst{t_1}{t^{\prime}}{x}\ \subst{t_2}{t^{\prime}}{x}: T$
+\item $t=\mathtt{zero}$, then $\subst{t}{t^{\prime}}{x} = \mathtt{zero}$ and we can directly apply the typing rule for $\mathtt{zero}$
+\item $t = \mathtt{succ}(t_1)$, then by the typing rule for $\mathtt{succ}$, we have $\Gamma,x:S\vdash t_1:\mathtt{Nat}$ and by induction hypothesis $\Gamma \vdash \subst{t_1}{t^{\prime}}{x}:\mathtt{Nat}$. 
+Then we can apply the typing rule again and get $\Gamma\vdash \subst{t}{t^{\prime}}{x}:\mathtt{Nat}$
+\end{itemize}
+
+\subsection*{Progress}
+Let $t$ be closed and well-typed, then by structural induction on $t$
+\begin{itemize}
+\item $t=x$. This case is impossible because $t$ is closed and $FV(x) = \{x\}$
+\item $t=\lambda x:T.t_1$, then $t$ is already a value
+\item $t = t_1\ t_2$, then by the typing rule for applications we have $\vdash t_1:T_1 \rightarrow T_2$ and $\vdash t_2:T_1$. Then we have three cases 
+\begin{enumerate}
+\item $t_1$ is not a value. 
+In this case, by induction hypothesis, there is some $t_1^{\prime}$ with $t_1\mapsto t_1^{\prime}$ and 
+by the congruence rule for applications $t_1\ t_2 \mapsto t_1^{\prime}\ t_2$
+\item $t_1$ is a value and $t_2$ is not. 
+Then there is some $t_2^{\prime}$ with $t_2\mapsto t_2^{\prime}$ and by the second congruence rule for applications $t_1\ t_2\mapsto t_1\ t_2^{\prime}$
+\item Both $t_1$ and $t_2$ are values. 
+In this case, since $\vdash t_1:T_1\rightarrow T_2$ by inversion (and by looking at typing rules for values), we have $t_1=\lambda x.t_3$ for some $t_3$, and we can evaluate $t \mapsto \subst{t_3}{t_2}{x}$
+\end{enumerate}
+\item $t = \mathtt{zero}$, then $t$ is a value 
+\item $t = \mathtt{succ}(t_1)$, then we have two cases 
+\begin{enumerate}
+\item $t_1$ is a value. Then it cannot be a lambda abstraction because of the typing rule for $\mathtt{succ}$ and thus must be a numeric value.
+In this case $\mathtt{succ}(t_1)$ also is
+\item $t_1$ is not a value, then by induction hypothesis, $t_1\mapsto t_1^{\prime}$ for some $t_1^{\prime}$ and by the congruence rule for $\mathtt{succ}$ we have $t\mapsto \mathtt{succ}(t_1^{\prime})$
+\end{enumerate}
+\end{itemize}
+
+\subsection*{Preservation}
+Let $t_1,t_2$ be terms with $t_1\mapsto t_2$ and $\Gamma\vdash t_1:T$ for some environment $\Gamma$ and type $t$.
+By induction on the used evaluation rule 
+\begin{itemize}
+\item \textsc{E-App1},then $t_1 = t_3\ t_4$, $t_2 = t_3^{\prime}\ t_4$ for some terms $t_3,t_3^{\prime},t_4$ with $t_3\mapsto t_3^{\prime}$.
+By the typing rule for applications, we have $\Gamma\vdash t_3:T_1\rightarrow T_2$ and $\Gamma \vdash t_4:T_1$ for some types $T_1,T_2$. 
+Then we apply the induction hypothesis to get $\Gamma\vdash t_3^{\prime}:T_1\rightarrow T_2$ and can apply the typing rule for applications again to get $\Gamma\vdash t_2:T$
+\item \textsc{E-App2}, analogous to \textsc{E-App1}, but with the roles of $t_3$ and $t_4$ swapped
+\item \textsc{E-AppAbs}, then $t_1 = (\lambda x.t_3)\ v$ for some term $t_3$ and value $v$, and we have $t_2 = \subst{t_3}{v}{x}$.
+By preservation of types under substitution we are then done.
+\item \textsc{E-Succ}, then $t_1=\mathtt{succ}(t_3)$ and $t_2=\mathtt{succ}(t_3^{\prime})$ for some terms $t_3,t_3^{\prime}$ with $t_3\mapsto t_3^{\prime}$.
+By the typoing rule for $\mathtt{succ}$, we have $\Gamma \vdash t_3:\mathtt{Nat}$ and thus by induction hypothesis $\Gamma \vdash t_3^{\prime}:\mathtt{Nat}$.
+Applying the typing rule again we then get $\Gamma \vdash t_2:T$
+\end{itemize}
+
+\section*{Task 3}
+\subsection*{Substitution of non-free variables}
+Let $t$ be a term, $\Gamma$ and environment, $T$ a type, $x$ a variable and $v$ a value, such that $\Gamma \vdash t:T$ and $x\notin \mathtt{dom}(\Gamma)$. 
+Then by induction on the typing derivation
+\begin{itemize}
+\item \textsc{T-Var}, then $t=y$ and we have $y:T\in\Gamma$ by the typing rule for variables.
+Since $x\notin\mathtt{dom}(\Gamma)$, we know $y\neq x$ and thus $\subst{t}{v}{x} = t$
+\item \textsc{T-Zero}, then $t=\mathtt{zero}$ and thus $\subst{t}{v}{x} = \mathtt{zero} = t$ 
+\item \textsc{T-Abs}, then $t= \lambda y:T_1.t_1$ for some term $t_1$ and we have $\Gamma,y:T_1\vdash t_1:T_2$ for some types $T_1,T_2$ with $T=T_1\rightarrow T_2$. 
+By convention we can assume $x\neq y$, and so by induction hypothesis $\subst{t_1}{v}{x} = t_1$ and thus $\subst{t}{v}{x} = \lambda y:T_1.\subst{t_1}{v}{x} = \lambda y:T_1.t_1 = t$
+\item \textsc{T-App},then $t=t_1\ t_2$ with $\Gamma \vdash t_1:T_1\rightarrow T$ and $\Gamma \vdash t_2:T_1$ for some type $T_1$. 
+Then by the induction hypothesis we have $\subst{t_1}{v}{x} = t_1$ and $\subst{t_2}{v}{x} = t_2$, so in total $\subst{t}{v}{x} = \subst{t_1}{v}{x}\ \subst{t_2}{v}{x} = t_1\ t_2 = t$.
+\item \textsc{T-Succ}, then $t = \mathtt{succ}(t_1)$ and we have $\Gamma \vdash t_1:\mathtt{Nat}$, so by induction hypothesis, $\subst{t_1}{v}{x} = t_1$ which gives $\subst{\mathtt{succ}(t_1)} = \mathtt{succ}(\subst{t_1}{v}{x}) = \mathtt{succ}(t_1) = t$
+\end{itemize}
+
+\subsection*{Free Variables are in the context}
+Let $t$ be a term $\Gamma$ a context and $T$ a type.
+By induction on the typing relation
+\begin{itemize}
+\item \textsc{T-Var}, then $t=x$ for some variable $x$, and $FV(t) = \{x\}$. 
+Since $t$ is well-typed, we require $x:T\in\Gamma$, so $FV(t) = \{x\}\subset\mathtt{dom}(\Gamma)$
+\item \textsc{T-Zero}, then $t=\mathtt{zero}$ and $FV(t) = \emptyset\subset\mathtt{dom}(\Gamma)$
+\item \textsc{T-Abs}, then $t = \lambda y:T_1.t_1$. 
+By the typing rule for abstractions we have $\Gamma.y:T_1\vdash t_1:T_2$ where $T = T_1 \rightarrow T_2$ and thus by induction hypothesis, $FV(t_1) \subset \mathtt{dom}(\Gamma,y:T_1) = \mathtt{dom}(\Gamma) \cup \{y\}$.
+Then $FV(t) = FV(t_1) \setminus \{y\} \subset (\mathtt{dom}(\Gamma) \cup \{y\})\setminus \{y\} = \mathtt{dom}(\Gamma)$
+\item \textsc{T-App}, then $t=t_1\ t_2$, and by the typing rule $\Gamma\vdash t_1:T_1\rightarrow T$ and $\Gamma \vdash t_2:T_1$, which by induction hypothesis gives $FV(t_1)\subset\mathtt{dom}(\Gamma)$ and $FV(t_2)\subset\mathtt{dom}(\Gamma)$.
+Then we have $FV(t) = FV(t_1) \cup FV(t_2) \subset \mathtt{dom}(\Gamma) \cup \mathtt{dom}(\Gamma) = \mathtt{dom}(\Gamma)$
+\item \textsc{T-Succ}, then $t = \mathtt{succ}(t_1)$ and by the typing rule $\Gamma \vdash t_1:\mathtt{Nat}$.
+Thus by induction hypothesis $FV(t_1) \subset \mathtt{dom}(\Gamma)$ and thus $FV(t) = FV(t_1) \subset \mathtt{dom}(\Gamma)$
+\end{itemize}
+
+\section*{Task 4}
+\subsection*{$\llbracket v\rrbracket$ is a value}
+Let $v$ be a value, then by structural induction
+\begin{itemize}
+\item $v = \lambda x:T.t$, then $\llbracket \lambda x:T.t\rrbracket = \lambda x.\llbracket t\rrbracket$.
+This is again a value
+\item $v = \mathtt{true}$, then $\llbracket v\rrbracket = \lambda x.\lambda y.x$, which is a value
+\item $v = \mathtt{false}$, then $\llbracket v \rrbracket = \lambda x.\lambda y.y$ which is a value
+\end{itemize}
+
+\subsection*{$t \mapsto v$, then $\llbracket t\rrbracket\mapsto^* \llbracket v\rrbracket$}
+Let $t$ be a term an $v$ be a value such that $t \mapsto v$. 
+Then we know, the only evaluation rules evaluating $t\mapsto v$ must be an evaluation step, not a congruence step, since \textsc{E-App1}, \textsc{E-App2} and \textsc{E-If} never produce values.
+So considering which other evaluation rule was used we get 
+\begin{itemize}
+\item \textsc{E-AppAbs}, then $t = (\lambda x:T.t_1)\ t_2$ and $\subst{t_1}{x}{t_2}$ is a value. 
+We also have $\llbracket t \rrbracket = (\lambda x.\llbracket t_1 \rrbracket)\ \llbracket t_2 \rrbracket$, 
+which evaluates to $\subst{\llbracket t_1 \rrbracket }{x}{\llbracket t_2 \rrbracket}{x} = \llbracket \subst{t_1}{t_2}{x} \rrbracket$, which is a value by the above
+\item \textsc{E-IfTrue}
+Then $t = \cond{\mathtt{true}}{v}{t_3}$, and we have $\llbracket t \rrbracket = \lambda b.\lambda x.\lambda y. (\lambda x.\lambda y.x)\ (\llbracket v \rrbracket)\ (\llbracket t_3 \rrbracket)$. 
+Evaluating this gives exactly $\llbracket v \rrbracket$ , which is a value by the above
+\item \textsc{E-IfFalse}
+Then $t = \cond{\mathtt{false}}{t_2}{v}$ and we have $\llbracket t \rrbracket = \lambda b.\lambda x.\lambda y. (\lambda x.\lambda y.y)\ (\llbracket t_2 \rrbracket)\ (\llbracket v \rrbracket)$, which evaluates to $\llbracket v \rrbracket$, which is a value by the above
+\end{itemize}
+\end{document}

@@ -3,7 +3,7 @@ Consider the following programming language of integers and floating point numbe
 \[
   \begin{array}{lcrr}
     & & n\in\mathbb{Z} \quad f\in\mathbb{R}\\
-    \oplus & \coloneq & + \mid - \mid * \mid / &\emph{Binary Operations}\\
+    \oplus & \coloneq & + \mid - \mid *  &\emph{Binary Operations}\\
     t & \coloneq & & \emph{Terms} \\
     & & \mathtt{Int}(n) & \emph{Integers}\\ 
     & \mid & \mathtt{Fl}(f) & \emph{Floating Point Numbers} \\
@@ -80,10 +80,10 @@ To this language we add the following type system:
 \end{minipage}
 Now consider the following terms in this language
 \begin{enumerate}
-  \item $(\mathtt{Fl}(1) + \mathtt{pow}(\mathtt{Fl}(5),\mathtt{Fl}(0.5)))/\mathtt{Fl}(2)$
+  \item $(\mathtt{Fl}(1) + \mathtt{pow}(\mathtt{Fl}(5),\mathtt{Fl}(0.5))) *\mathtt{Fl}(2)$
   \item $\mathtt{round}(\mathtt{Fl}(3) * \mathtt{AsFloat}(\mathtt{Int}(4)))$
   \item $\mathtt{pow}(\mathtt{AsFloat}(\mathtt{Int}(2)),\mathtt{Int}(64))$
-  \item $\mathtt{Fl}(4) / \mathtt{Int}(2)$
+  \item $\mathtt{Fl}(4) + \mathtt{Int}(2)$
 \end{enumerate}
 For each of these terms, state if they can be typed using the rules above.
 If they can be, give a typing derivation, otherwise give a reason why the term is not well-typed.
