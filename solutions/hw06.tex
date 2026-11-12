@@ -1,0 +1,227 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{bussproofs}
+
+\newcommand{\typrod}[2]{\ensuremath#1\times#2}
+\newcommand{\typlus}[2]{\ensuremath#1+#2}
+\newcommand{\tyfun}[2]{\ensuremath#1\rightarrow#2}
+\newcommand{\tynat}{\ensuremath\mathtt{Nat}}
+\newcommand{\tybool}{\ensuremath\mathtt{Bool}}
+\newcommand{\tyvar}[2]{\ensuremath\langle #1:#2\rangle}
+\newcommand{\tyoption}[1]{\ensuremath\mathtt{Option}[#1]}
+
+\newcommand{\lamabs}[3]{\ensuremath\lambda#1:#2.#3}
+\newcommand{\cond}[3]{\ensuremath\mathtt{if}\ #1\ \mathtt{then}\ #2\ \mathtt{else}\ #3}
+\newcommand{\mkpair}[2]{\ensuremath\{#1,#2\}}
+\newcommand{\inl}[1]{\ensuremath\mathtt{inl}(#1)}
+\newcommand{\inr}[1]{\ensuremath\mathtt{inr}(#1)}
+\newcommand{\sumcase}[5]{\ensuremath\mathtt{case}\ #1\ \mathtt{of}\ \inl{#2} \Rightarrow #3 \mid \inr{#4} \Rightarrow #5}
+\newcommand{\varcase}[4]{\ensuremath\mathtt{case}\ #1\ \mathtt{of}\ \langle #2 = #3 \rangle \Rightarrow #4 }
+\newcommand{\isz}[1]{\ensuremath\mathtt{iszero}(#1)}
+\newcommand{\suc}[1]{\ensuremath\mathtt{succ}(#1)}
+\newcommand{\some}[1]{\ensuremath\mathtt{Some}(#1)}
+\newcommand{\none}{\ensuremath\mathtt{None}}
+\newcommand{\somecase}[4]{\ensuremath\mathtt{case}\ #1\ \mathtt{of}\ \none \Rightarrow #2 \mid \some{#3} \Rightarrow #4}
+
+\newcommand{\typeinf}[3]{\ensuremath#1\vdash#2:#3}
+\newcommand{\eval}[2]{\ensuremath#1\mapsto#2}
+\newcommand{\subst}[3]{\ensuremath #1[#2/#3]}
+
+\begin{document}
+
+
+\section*{Task 1: STLC with Extensions}
+\setcounter{section}{1}
+\subsection{}
+\begin{itemize}
+\item $\square = p:\typrod{\tynat}{\tynat}$
+\item $\square = \tyfun{\tybool}{\tybool}$
+\end{itemize}
+
+Let $\Gamma = p:\typrod{\tynat}{\tynat},b:\tybool$
+
+\begin{prooftree}
+\AxiomC{$b:bool\in \Gamma$}
+\UnaryInfC{$\typeinf{\Gamma}{b}{\tybool}$}
+\AxiomC{$p:\typrod{\tynat}{\tynat}\in\Gamma$}
+\UnaryInfC{$\typeinf{\Gamma}{p}{\typrod{\tynat}{\tynat}}$}
+\UnaryInfC{$\typeinf{\Gamma}{p.1}{\tynat}$}
+\UnaryInfC{$\typeinf{\Gamma}{\isz{p.1}}{\tybool}$}
+\AxiomC{$p:\typrod{\tynat}{\tynat}\in\Gamma$}
+\UnaryInfC{$\typeinf{\Gamma}{p}{\typrod{\tynat}{\tynat}}$}
+\UnaryInfC{$\typeinf{\Gamma}{p.2}{\tynat}$}
+\UnaryInfC{$\typeinf{\Gamma}{\isz{p.2}}{\tybool}$}
+\TrinaryInfC{$\typeinf{\Gamma}{\cond{b}{\isz{p.1}}{\isz{p.2}}}{\tybool}$}
+\UnaryInfC{$\typeinf{p:\typrod{\tynat}{\tynat}}{\lamabs{b}{\tybool}{\cond{b}{\isz{p.1}}{\isz{p.2}}}}{\tyfun{\tybool}{\tybool}}$}
+\end{prooftree}
+
+\subsection{}
+
+\begin{enumerate}
+\item $\square = \typlus{\tynat}{\tybool}$
+\item $\square = \typlus{\tynat}{\tybool}$
+\end{enumerate}
+
+\begin{prooftree}
+\AxiomC{$z:\tynat \in x:\typlus{\tynat}{\tybool},z:\tynat$}
+\UnaryInfC{$\typeinf{x:\typlus{\tynat}{\tybool},z:\tynat}{z}{\tynat}$}
+\UnaryInfC{$\typeinf{x:\typlus{\tynat}{\tybool},z:\tynat}{\isz{z}}{\tybool}$}
+\AxiomC{$z:\tybool\in x:\typlus{\tynat}{\tybool},z:\tybool$}
+\UnaryInfC{$\typeinf{x:\typlus{\tynat}{\tybool},z:\tybool}{z}{\tybool}$}
+\BinaryInfC{$\typeinf{x:\typlus{\tynat}{\tybool}}{(\sumcase{x}{y}{\isz{y}}{z}{z}}{\tybool}$}
+\UnaryInfC{$\typeinf{}{\lamabs{x}{\typlus{\tynat}{\tybool}}{(\sumcase{x}{y}{\isz{y}}{z}{z}})}{\tyfun{\typlus{\tynat}{\tynat}}{\tybool}}$}
+\end{prooftree}
+
+\subsection{}
+\begin{enumerate}
+\item $\square = \inl{x}$
+\end{enumerate}
+Alternatively, $\square=\inr{\mkpair{x}{x}}$
+
+\begin{prooftree}
+\AxiomC{$x:A \in x:A$}
+\UnaryInfC{$\typeinf{x:A}{x}{A}$}
+\UnaryInfC{$\typeinf{x:A}{\inl{x}}{\typlus{A}{\typrod{A}{A}}}$}
+\UnaryInfC{$\typeinf{}{\lamabs{x}{A}{\inl{x}}}{\tyfun{A}{\typlus{A}{\typrod{A}{A}}}}$}
+\end{prooftree}
+
+\subsection{}
+The bound term of the case is a record while the actual match matches on a variant, so this does not work
+
+\subsection{}
+
+\begin{enumerate}
+\item $\square = p:\tyvar{c}{\tynat}$
+\end{enumerate}
+
+\begin{prooftree}
+\AxiomC{$p:\tyvar{c}{\tynat} \in p:\tyvar{c}{\tynat}$}
+\UnaryInfC{$\typeinf{p:\tyvar{c}{\tynat}}{p}{\tyvar{c}{\tynat}}$}
+\AxiomC{$x:\tynat \in p:\tyvar{c}{\tynat},x:\tynat$}
+\UnaryInfC{$\typeinf{p:\tyvar{c}{\tynat},x:\tynat}{x}{\tynat}$}
+\UnaryInfC{$\typeinf{p:\tyvar{c}{\tynat},x:\tynat}{\suc{x}}{\tynat}$}
+\BinaryInfC{$\typeinf{p:\tyvar{c}{\tynat}}{\varcase{p}{c}{x}{\suc{x}}}{\tynat}$}
+\end{prooftree}
+
+\section*{Task 2: The \texttt{Option} Type}
+\setcounter{section}{2}
+
+\subsection{Evaluation}
+\begin{prooftree}
+\AxiomC{$\eval{t}{t^{\prime}}$}
+\RightLabel{\textsc{E-Some}}
+\UnaryInfC{$\eval{\some{t}}{\some{t^{\prime}}}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\eval{t_1}{t_1^{\prime}}$}
+\RightLabel{\textsc{E-Case}}
+\UnaryInfC{$\eval{\somecase{t_1}{t_2}{x}{t_3}}{\somecase{t_1^{\prime}}{t_2}{x}{t_3}}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{E-CaseSome}}
+\UnaryInfC{$\eval{\somecase{\none}{t_1}{x}{t_2}}{t_1}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{E-CaseNil}}
+\UnaryInfC{$\eval{\somecase{\some{v}}{t_1}{x}{t_2}}{\subst{t_2}{v}{x}}$}
+\end{prooftree}
+
+\subsection{Typing}
+
+\begin{prooftree}
+\AxiomC{$\typeinf{\Gamma}{t}{T}$}
+\RightLabel{\textsc{T-Some}}
+\UnaryInfC{$\typeinf{\Gamma}{\some{t}}{\tyoption{T}}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{\textsc{T-None}}
+\UnaryInfC{$\typeinf{\Gamma}{\none}{\tyoption{T}}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\typeinf{\Gamma}{t_1}{\tyoption{S}}$}
+\AxiomC{$\typeinf{\Gamma}{t_2}{T}$}
+\AxiomC{$\typeinf{\Gamma,x:S}{t_3}{T}$}
+\RightLabel{\textsc{T-Case}}
+\TrinaryInfC{$\typeinf{\Gamma}{\somecase{t_1}{t_2}{x}{t_3}}{T}$}
+\end{prooftree}
+
+\subsection{Soundness}
+
+\subsubsection{Progress}
+Let $t$ be a term, $T$ a type and $\Gamma$ an environment with $\typeinf{\Gamma}{t}{T}$.
+By structural induction on $t$
+\begin{itemize}
+\item $t = \none$, then $t$ is a value
+\item $t=\some{t_1}$, then either $t_1$ is a value, in which case $t$ is as well, or $t$ is not a value and we can apply the induction hypothesis 
+($t_1$ is well-typed with type $S$ where $T=\tyoption{S}$, by \textsc{Ty-Some}) 
+to get some term $t_1^{\prime}$ with $\eval{t_1}{t_1^{\prime}}$. 
+Then by \textsc{E-Some}, we get $\eval{\some{t_1}}{\some{t_1^{\prime}}}$
+\item $t=\somecase{t_1}{t_2}{x}{t_3}$, then by \textsc{Ty-Case}, $t_1:\tyoption{S}$ for some type $S$ and we know the only values that can have this type are $\some{...}$ or $\none$, so we have three cases
+\begin{enumerate}
+\item $t_1$ is not a value, then by induction hypothesis, there is some $t_1^{\prime}$ with $\eval{t_1}{t_1^{\prime}}$ and by \textsc{E-Case}, we have $\eval{\somecase{t_1}{t_2}{x}{t_3}}{\somecase{t_1^{\prime}}{t_2}{x}{t_3}}$.
+\item $t_1$ is a value and $t_1 = \some{v}$, so we can apply \textsc{E-CaseSome} to get $\eval{t}{\subst{t_3}{v}{x}}$
+\item $t_1$ is a value and $t_1 = \none$, so we can apply \textsc{E-CaseNone} to get $\eval{t}{t_2}$
+\end{enumerate}
+\end{itemize}
+
+\subsubsection{Preservation}
+Let $t_1,t_2$ be terms with $\eval{t_1}{t_2}$ and let $\Gamma$ be an environment, $T$ a type with $\typeinf{\Gamma}{t_1}{T}$. 
+Then by induction on the used evaluation rule
+\begin{itemize}
+\item \textsc{E-Some}, then we have $t_1 = \some{t_1^{\prime}}$ and $t_2 = \some{t_2^{\prime}}$ for some terms $t_1^{\prime},t_2^{\prime}$ such that $\eval{t_1^{\prime}}{t_2^{\prime}}$. By induction hypothesis, we then get $\typeinf{\Gamma}{t_2^{\prime}}{S}$, where $T=\tyoption{S}$ and we can apply \textsc{T-Some} to get $\typeinf{\Gamma}{t_2}{T}$
+\item \textsc{E-Case}, then we have $t_1 = \somecase{t_3}{t_4}{x}{t_5}$ and $t_2 = \somecase{t_3^{\prime}}{t_4}{x}{t_5}$ for some terms $t_3,t_3^{\prime},t_4,t_5$ with $\eval{t_3}{t_3^{\prime}}$.
+By the typing rule \textsc{T-Case}, we have $\typeinf{\Gamma}{t_3}{\tyoption{S}}$,$\typeinf{\Gamma}{t_4}{T}$ and $\typeinf{\Gamma,x:S}{t_5}{T}$. 
+Applying the induction hypothesis then gives $\typeinf{\Gamma}{t_3^{\prime}}{\tyoption{S}}$ and we can then aplpy \textsc{T-Case} again to get $\typeinf{\Gamma}{t_2}{T}$
+\item \textsc{E-CaseSome}, then we have $t_1 = \somecase{t_3}{t_4}{x}{t_5}$ and $t_2 = \subst{t_5}{t_2}{x}$ for some terms $t_3,t_4,t_5$. 
+By the typing rule \textsc{T-Case}, we have $\typeinf{\Gamma}{t_3}{\tyoption{S}}$,$\typeinf{\Gamma}{t_4}{T}$ and $\typeinf{\Gamma,x:S}{t_5}{T}$ for some type $S$.
+Because of type preservation after substition, we then have $\typeinf{\Gamma}{t_2}{T}$ 
+\item \textsc{E-CaseNone}, then $t_1 = \somecase{t_3}{t_2}{x}{t_4}$ for some terms $t_3,t_4$. 
+By \textsc{T-Case} this directly gives $\typeinf{\Gamma}{t_2}{T}$
+\end{itemize}
+
+\section*{Task 4: Substructural Type Systems}
+
+\subsection{Exchange}
+Let $\Gamma_a,\Gamma_b$ be typing contexts, $T_a,T_b,T$ types and $t$ a term with $\typeinf{\Gamma_a,x_a:_1T_a,x_b:_1T_b,\Gamma_b}{t}{T}$. 
+Then by induction on the typing rules 
+\begin{itemize}
+\item \textsc{T-Var}, then $t=x$ for some variable $x$. This case can never happen, since \textsc{T-Var} requires the context to contain exactly one binding, and we have at least two 
+\item \textsc{T-Abs}, then $t=\lambda_a x:T_1.t^{\prime}$ and $T=T_1\rightarrow_1 T_2$ and we have $\typeinf{\Gamma_a,x_a:_1 T_a,x_b:_1 T_b,\Gamma_b,x:_1 :T_1}{t^{\prime}}{T_2}$, so by induction hypothesis (with $\Gamma_b = \Gamma_b,x:_1T_1$) $\typeinf{\Gamma_a,x_b:_1T_b,x_b:_1T_a,\Gamma_b,x:_1T_1}{t_1^{\prime}}{T_2}$ and $x\notin \mathtt{dom}(\Gamma_a,x_a:_1T_a,x_b:_1T_b,\Gamma_b)$, so we can apply \textsc{T-Abs} with exchanged context and are done.
+\item \textsc{T-App}, then $t = t_1\ t_2$ and we have $\typeinf{\Gamma_1}{t_1}{T_2\rightarrow_1 T}$ and $\typeinf{\Gamma_2}{t_2}{T_2}$ for some contexts $\Gamma_1,\Gamma_2$ with $\Gamma_1 \circ \Gamma_2 = \Gamma_a,x_a:_1T_a,x_b:_1T_b,\Gamma_b$.
+Then we have 3 cases 
+\begin{itemize}
+\item $x_a \in \Gamma_1$ and $x_b\in\Gamma_2$, in this case we are already done, since we simply need to swap the corresponding rules when splitting the context
+\item $x_a,x_b\in\Gamma_1$, in this case, we have $\Gamma_1 = \dots,x_a:_1T_a,x_b:_1T_b,\dots$ and can apply the induction hypothesis to get $\typeinf{\dots,x_b:_1T_b,x_a:_1T_a,\dots}{t_1}{T_2\rightarrow_1T}$ and using the same hypothesis as above, apply \textsc{T-App} again and are done.
+\item $x_a,x_b\in\Gamma_2$, analogous to the previous case, with the induction hypothesis applied to the derivation of $t_2$
+\end{itemize}
+\item \textsc{T-Match}, analogous to \textsc{T-App}
+\item \textsc{T-Pair}, analogous to \textsc{T-App}
+\end{itemize}
+
+\subsection{No Weakening}
+We can simply take $\Gamma = y:_1T$, $x\neq y$ $t=y$ with arbitrary types $T,T^{\prime}$.
+Then for $\Gamma$ we can apply \textsc{T-Var} to type $t$, but if we extend the context and have two variables, we can no longer apply the rule since the rule explicitly requires a single one.
+
+\subsection{Consequences}
+Each variable that is bound somewhere (in this case in some lambda abstraction) has to be used once and exactly once.
+
+Because if we use a variable multiple times, we will at some point have to apply a rule, in which we have to split the context and can only keep the variable for one of the premises and not both. Then when we need to type the variable in two different places, we can't since we only have it in one place.
+
+On the other hand, if we don't use a variable, it will always be in the context, and since the only typing rules without premises are the ones for variables, we will have to type some (different) variable at some point which we cannot do since the other variable is still in the context.
+
+\subsection{Uses}
+
+Linear Types are sometimes used when we have to keep track of some sort of resource we are using, most commonly memory.
+If we can guarantee that anything that is defined (that is allocated) is used exactly once, we also know how long something must be kept in memory and can immediately drop it once it is no longer needed. 
+We can also freely move or modify data, since we know it cannot be used anywhere else. 
+This also helps in some other optimizations such as inlining.
+
+\end{document}

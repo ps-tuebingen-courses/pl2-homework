@@ -53,7 +53,7 @@ We want to extend STLC with $\mathtt{Option}\ t$
 \begin{enumerate}
   \item Give small-step evaluation semantics for the extension of STLC with $\mathtt{Option}$.
   \item Give appropriate typing rules.
-  \item Prove soundness (progress and preservation) for STLC with $\mathtt{Option}$ and pairs (11-5).
+  \item Prove soundness (progress and preservation) for STLC with $\mathtt{Option}$ and pairs (11-5). You only have to give the inducive cases for terms/typing derivations/evaluation steps for the new rules, not repeat the proof for stlc. You also do not have to prove type preservation after substitution
 \end{enumerate}
 
 \section{Implementation}
@@ -67,9 +67,9 @@ However, we recommend that you use a language that
 \end{itemize}
 E.g.,
 Haskell,
-Scala\footnote{Use case classes or enums (Scala 3)!},
+Scala\footnote{Use case classes or enums (Scala 3)},
 most dialects of ML, 
-Rust\footnote{Note that manual memory management may be an additional challenge here!},
+Rust\footnote{Note that memory management may be an additional challenge here!},
 many LISP dialects\footnote{Here, you can use sexps to represent terms.},
 $\dots$.
 
@@ -213,10 +213,7 @@ Some remarks:
     $\Gamma, x:_1 T^{\prime}\vdash t:T$ does \emph{not} hold
   \item What do those properties mean for programming in a language based on this calculus?
   \item Can you think of a situation where this might be useful
-  \item Can we add extensions to recover the features we lost on the term level?\\
-    That is, define an extension to the syntax of terms along with evaluation and typing rules.
-    Then show (informally) how to use those
 \end{enumerate}
 
 \section{Types and Programming Languages}
-Read trough chapter 11 of Types and Programming Languages and post your questions in the dedicated forum thread.
+Read trough chapter 11 of Types and Programming Languages and post your questions in the forum.
