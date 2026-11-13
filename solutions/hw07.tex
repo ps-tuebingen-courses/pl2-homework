@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage{bussproofs}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[a4paper]{geometry}
+
+\setlength{\hoffset}{-0.5in}
+
+\newcommand{\rpred}[2]{\ensuremath R_{#1}(#2)}
+\newcommand{\tyfun}[2]{\ensuremath #1 \rightarrow #2}
+\newcommand{\tylist}[1]{\ensuremath \mathtt{List}[#1]}
+\newcommand{\cons}[3]{\ensuremath \mathtt{Cons}[#1](#2,#3)}
+\newcommand{\nil}[1]{\ensuremath \mathtt{Nil}[#1]}
+\newcommand{\isnil}[2]{\ensuremath \mathtt{isnil}[#1](#2)}
+\newcommand{\head}[2]{\ensuremath \mathtt{head}[#1](#2)}
+\newcommand{\tail}[2]{\ensuremath \mathtt{tail}[#1](#2)}
+\newcommand{\subst}[3]{\ensuremath #1[#2/#3]}
+\newcommand{\tybool}{\ensuremath\mathtt{Bool}}
+\newcommand{\uni}{\ensuremath\mathtt{unit}}
+\newcommand{\lam}[2]{\ensuremath\lambda #1.#2}
+\newcommand{\app}[2]{\ensuremath #1\ #2}
+\newcommand{\tyuni}{\ensuremath\mathtt{Unit}}
+\newcommand{\annot}[2]{\ensuremath (#1):#2}
+
+\begin{document}
+\section*{Task 1: Normalization}
+
+\subsection*{Definition}
+For this example we will use the extensions of lists.
+
+\begin{itemize}
+\item $\rpred{A}{t}$ iff $t$ halts
+\item $\rpred{\tyfun{T_1}{T_2}}{t}$ iff $t$ halts and for all $\rpred{T_1}{s}$ we have $\rpred{T_2}{t\ s}$
+\item $\rpred{\tylist{T}}{t}$ iff $t$ halts and for all $\rpred{T}(s)$ we have $\rpred{T}{\cons{T}{s}{t}}$, $\rpred{T}{\head{T}{t}}$, $\rpred{\tylist{T}}{\tail{T}{t}}$ and $\rpred{\tybool}{\isnil{T}{t}}$
+\end{itemize}
+
+\subsection*{If $t:T$ and $t\mapsto t^{\prime}$, then $\rpred{T}{t}$ iff $\rpred{T}{t^{\prime}}$}
+
+By structural induction on $T$ (only using cases not already covered without extensions).
+The only type we have to consider is $T=\tylist{T_1}$ for some type $T_1$. 
+First, assume $\rpred{\tylist{T_1}}(t)$ and $\rpred{T}(s)$ for some $s$. Then we have $\rpred{T}{\cons{T}{s}{t}}$, $\rpred{T}{\head{T}{t}}$, $\rpred{\tylist{T}}{\tail{T}{t}}$ and $\rpred{\tybool}{\isnil{T}{t}}$.
+Then we have a few cases 
+\begin{enumerate}
+\item $\cons{T}{s}{t} \mapsto \cons{T}{s^{\prime}}{t}$ which we don't have to prove since $s:T$ is covered by a different case 
+\item $\cons{T}{s}{t} \mapsto \cons{T}{s}{t^{\prime}}$ in which case we have $\rpred{T}{t^{\prime}}$ by induction hypothesis.
+\item $\head{T}{t} \mapsto \head{T}{t^{\prime}}$ in which case $\rpred{T}{t^{\prime}}$  by induction hypothesis
+\item $\tail{T}{t} \mapsto \tail{T}{t^{\prime}}$ in which case $\rpred{T}{t^{\prime}}$ by induction hypothesis
+\item $\isnil{T}{t} \mapsto \isnil{T}{t^{\prime}}$ in which case $\rpred{T}{t^{\prime}}$ by induction hypothesis
+\end{enumerate}
+
+Combining all of this, by definition of $\rpred{\cdot}{\cdot}$, we then get $\rpred{T}{t^{\prime}}$, and the other direction is again analogous
+
+
+\subsection*{If $x_1:T_1,\dots,x_n:T_n\vdash t:T$ and $v_1,\dots,v_n$ are closed values for types $T_1,\dots,T_n$ with $\rpred{T_i}{v_i}$ for each $i$, then $\rpred{T}{\subst{\subst{t}{v_n}{x_n}\dots}{v_1}{x_1}}$}
+
+Continuing with the induction on the typing derivation
+\begin{enumerate}
+\item \textsc{T-Nil}, then $t=\nil{T}$ for some $T$, and since $\subst{\nil{T}}{v}{x} = \nil{T}$ for any value $v$ and variable $x$, we are done.
+\item \textsc{T-Cons}, then $t=\cons{T}{t_1}{t_2}$ for some terms $t_1,t_2$. 
+By induction hypothesis $\rpred{T}{\subst{\subst{t_1}{v_n}{x_n}\dots}{v_1}{x_1}}$ and $\rpred{\tylist{T}}{\subst{\subst{t_2}{v_n}{x_n}\dots}{v_1}{x_1}}$, and we can apply \textsc{T-Cons} again and are done
+\item \textsc{T-Head}, then $t=\head{T}{t_1}$ for some $t_1$ and by induction hypothesis $\rpred{T}{\subst{\subst{t_1\dots}{v_n}{x_n}}{v_1}{x_1}}$, so we can apply \textsc{T-Head} again
+\item \textsc{T-Tail}, then $t=\tail{T}{t_1}$ for some $t_1$ and by induction hypothesis $\rpred{\tylist{T}}{\subst{\subst{t_1\dots}{v_n}{x_n}}{v_1}{x_1}}$ so we can apply \textsc{T-Tail} again
+\item \textsc{T-IsNil}, then $t=\isnil{T}{t_1}$ for some $t_1$ and by induction hypothesis $\rpred{\tylist{T}}{\subst{t_1\dots}{v_n}{x_n}{v_1}{x_1}}$ so we can apply \textsc{T-IsNil} again
+\end{enumerate}
+
+\section*{Task 2: Bidirectional Typing}
+
+\subsection*{Typing Derivation}
+In the following, let $\tau\coloneq \tyfun{\tyfun{\tyuni}{\tyuni}}{\tyfun{\tyuni}{\tyuni}}$, $\sigma=\tyfun{\tyuni}{\tyuni}$, $\Gamma = f:\sigma,x:\tyuni$
+\begin{prooftree}
+\AxiomC{$f:\sigma\in \Gamma$}
+\UnaryInfC{$\Gamma \vdash f \Rightarrow \sigma$}
+\AxiomC{$x:\tyuni \in \Gamma$}
+\UnaryInfC{$\Gamma \vdash x \Rightarrow \tyuni$}
+\AxiomC{$\tyuni =\tyuni$}
+\BinaryInfC{$\Gamma\vdash x \Leftarrow \tyuni$}
+\BinaryInfC{$\Gamma \vdash \app{f}{x}\Rightarrow \tyuni$}
+\AxiomC{$\tyuni = \tyuni$}
+\BinaryInfC{$\Gamma\vdash \app{f}{x} \Leftarrow \tyuni$}
+\UnaryInfC{$f:\sigma \vdash \lam{x}{\app{f}{x}} \Leftarrow \sigma$}
+\UnaryInfC{$\vdash \lam{f}{\lam{x}{\app{f}{x}}} \Leftarrow \tau$}
+\UnaryInfC{$\vdash \annot{\lam{f}{\lam{x}{\app{f}{x}}}}{\tau} \Rightarrow \tau$}
+\AxiomC{$y:\tyuni \in y:\tyuni$}
+\UnaryInfC{$y:\tyuni \vdash y:\tyuni$}
+\UnaryInfC{$\vdash \lam{y}{y} \Leftarrow \sigma$}
+\BinaryInfC{$\vdash \app{(\annot{\lam{f}{\lam{x}{\app{f}{x}}}}{\tau})}{\lam{y}{y}} \Rightarrow \sigma$}
+\AxiomC{}
+\UnaryInfC{$\vdash \uni \Leftarrow \tyuni$}
+\BinaryInfC{$\vdash (\annot{\lam{f}{\lam{x}{\app{f}{x}}}}{\tau})\ (\lam{y}{y})\ \uni \Rightarrow \tyuni$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$f:\sigma \in\Gamma$}
+\UnaryInfC{$\Gamma \vdash f \Rightarrow\sigma$}
+\AxiomC{$\sigma=\sigma$}
+\BinaryInfC{$\Gamma \vdash f \Leftarrow \sigma$}
+\AxiomC{$x:\tyuni \in \Gamma$}
+\UnaryInfC{$\Gamma\vdash x\Rightarrow \tyuni$}
+\BinaryInfC{$\Gamma\vdash \app{f}{x} \Leftarrow \tyuni$}
+\UnaryInfC{$f:\sigma \vdash \lam{x}{\app{f}{x}} \Leftarrow \sigma$}
+\UnaryInfC{$\vdash \lam{f}{\lam{x}{\app{f}{x}}}\Leftarrow \tau$}
+\AxiomC{$y:\tyuni \in y:\tyuni$}
+\UnaryInfC{$y:\tyuni \vdash y \Rightarrow\tyuni$}
+\AxiomC{$\tyuni = \tyuni$}
+\BinaryInfC{$y:\tyuni \vdash y \Leftarrow \tyuni$}
+\UnaryInfC{$\vdash \lam{y}{y} \Leftarrow \sigma$}
+\UnaryInfC{$\vdash \annot{\lam{y}{y}}{\sigma} \Rightarrow \sigma$}
+\BinaryInfC{$\vdash \app{\lam{f}{\lam{x}{\app{f}{x}}}}{\annot{\lam{y}{y}}{\sigma}}\Leftarrow \sigma$}
+\AxiomC{}
+\UnaryInfC{$\vdash \uni \Leftarrow \tyuni$}
+\UnaryInfC{$\vdash \annot{\uni}{\tyuni} \Rightarrow \tyuni$}
+\BinaryInfC{$\vdash \app{\app{(\lam{f}{\lam{x}{\app{f}{x}}})}{(\annot{\lam{y}{y}}{\sigma})}}{(\annot{\uni}{\tyuni})} \Leftarrow \tyuni$}
+\end{prooftree}
+
+\subsection*{Extension with lists}
+
+Since all types involving lists have explicit typing annotations in their syntax, these rules can all be used for both.
+
+\begin{prooftree}
+\AxiomC{}
+\UnaryInfC{$\Gamma\vdash \nil{T} \Leftarrow \tylist{T}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash t_1 \Leftarrow T$}
+\AxiomC{$\Gamma\vdash t_2 \Leftarrow \tylist{T}$}
+\BinaryInfC{$\Gamma \vdash \cons{T}{t_1}{t_2} \Leftarrow \tylist{T}$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash t \Leftarrow \tylist{T}$}
+\UnaryInfC{$\Gamma \vdash \isnil{T}{t} \Leftarrow \tybool$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash t \Leftarrow \tylist{T}$}
+\UnaryInfC{$\Gamma \vdash \head{T}{t} \Leftarrow T$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash t \Leftarrow \tylist{T}$}
+\UnaryInfC{$\Gamma \vdash \tail{T}{t} \Leftarrow \tylist{T}$}
+\end{prooftree}
+\end{document}
